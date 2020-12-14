@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>testMainPage</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+<!--set username-->
+<form action="mainMenuPage.ejs" method="post">
+    <p>set username</p>
+    <input type="text" id="username" name="username" value="player1">
+    <input type="submit" value="set username">
+</form>
+
+<br>
+<!--create a game and nav to game page-->
+<form action="boardPage.ejs" method="post">
+    <p>create game</p>
+    <input type="hidden" name="requestedAction" value="createGame">
+    <input type="submit" value="create game">
+</form>
+
+<br>
+<!--nav to an existing game page-->
+<form action="boardPage.ejs" method="post">
+    <p>enter code</p>
+    <input type="hidden" name="requestedAction" value="joinGame">
+    <input type="text" id="codeEntry" name="gameCode" value="abc123">
+    <input type="submit" value="Join a Game">
+</form>
+
+<br>
+
+<p>number of pageviews: <%= pageviews%></p>
+
+</body>
+</html>
