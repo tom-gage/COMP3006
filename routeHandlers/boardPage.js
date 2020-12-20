@@ -4,8 +4,6 @@ let express = require('express');
 let router = express.Router();
 
 router.get('/', function (req, res) {
-    console.log('board page GET');
-
     res.send('game not found!')
 });
 
@@ -24,15 +22,15 @@ router.post('/', function (req, res) {
         console.log('JOINED GAME OBJECT = ' + game);
     }
 
-    console.log('game object player1ID = ' + game.player1ID);
-    console.log('game object player2ID = ' + game.player2ID);
+    // console.log('p1ID = ' + game.player1ID);
+    // console.log('p2ID = ' + game.player2ID);
 
     //serve page
     res.render('boardPage.ejs', {
-
         gameCode : game.code,
         username1 : game.player1ID,
-        username2: game.player2ID
+        username2 : game.player2ID,
+        testVal : ACTIVE_GAMES
     });
 
 });
@@ -49,20 +47,32 @@ function createNewActiveGame(req, res){
 }
 
 function joinActiveGame(req, res){
-    let targetGame;
+    let targetGame = null;
 
-    ACTIVE_GAMES.forEach(function (game, index) {
+    ACTIVE_GAMES.forEach(function (game, index) {//for each game in ACTIVE_GAMES
         console.log('GAME CODE: ' + game.code);
         console.log('SEARCH GAME CODE: ' + req.body.gameCode);
-        console.log('GAME p2ID: ' + game.player2ID);
+        console.log('Joining players ID: ' + game.player2ID);
+
+        let activeGame = game;
+        let searchGameCode = req.body.gameCode;
 
 
-        if(game.code.toString() === req.body.gameCode.toString()){
-            game.player2ID = req.session.userID;
 
-            targetGame = game;
+        if(activeGame.code.toString() === searchGameCode.toString()){//if there's an active game with a code matching the submitted code
+            if(game.player1ID === req.session.userID){//if player is already in game as player 1, may seem redundant but it prevents player1 joining their own game
+                console.log('FLAG 1');
+                targetGame = game;
+            } else if (game.player2ID === req.session.userID){//if player is already in game as player 2
+                console.log('FLAG 2');
+                targetGame = game;
+            } else if(game.player2ID === 'Not here yet'){//if game has space
+                console.log('FLAG 3');
+                game.player2ID = req.session.userID;//add player2
+                ACTIVE_GAMES.splice(index, 1, game);//at current index: delete game, replace with updated game
+                targetGame = game;
+            }
         }
-
     });
 
     return targetGame;
