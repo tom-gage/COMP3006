@@ -26,14 +26,20 @@
 
 <br>
 <!--nav to an existing game page-->
-<form action="boardPage.ejs" method="post">
+<form action="boardPage.ejs" method="get">
     <p>enter code</p>
-    <input type="hidden" name="requestedAction" value="joinGame">
     <input type="text" id="codeEntry" name="gameCode" value="abc123">
     <input type="submit" value="Join a Game">
 </form>
 
 <br>
+
+<!--<form action="boardPage.ejs" method="get">-->
+<!--    <p>enter code(TEST VERSION)</p>-->
+<!--&lt;!&ndash;    <input type="hidden" name="requestedAction" value="joinGame">&ndash;&gt;-->
+<!--    <input type="text" id="codeEntry" name="gameCode" value="abc123">-->
+<!--    <input type="submit" value="Join a Game">-->
+<!--</form>-->
 
 <p>number of pageviews: <%= pageviews%></p>
 

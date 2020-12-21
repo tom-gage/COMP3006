@@ -3,10 +3,28 @@ let ActiveGame = require('../app/objectClasses/ActiveGame');
 let express = require('express');
 let router = express.Router();
 
+//GET, join game
 router.get('/', function (req, res) {
-    res.send('game not found!')
+    console.log('GET REQUEST RECEIVED!');
+    console.log('- - - - JOIN GAME REQUEST RECEIVED - - - -');
+
+    let game;
+
+    game = joinActiveGame(req, res);
+
+    if(game != null){//if not null, serve page
+        res.render('boardPage.ejs', {
+            gameCode : game.code,
+            username1 : game.player1ID,
+            username2 : game.player2ID,
+            testVal : ACTIVE_GAMES
+        })
+    } else{//else, game not found
+        res.send('game not found >.<');
+    }
 });
 
+//POST, create game
 router.post('/', function (req, res) {
     let game;
 
@@ -15,15 +33,6 @@ router.post('/', function (req, res) {
         game = createNewActiveGame(req, res);
         console.log('CREATED GAME OBJECT = ' + game);
     }
-
-    if (req.body.requestedAction === 'joinGame'){//if join game
-        console.log('- - - - JOIN GAME REQUEST RECEIVED - - - -');
-        game = joinActiveGame(req, res);
-        console.log('JOINED GAME OBJECT = ' + game);
-    }
-
-    // console.log('p1ID = ' + game.player1ID);
-    // console.log('p2ID = ' + game.player2ID);
 
     //serve page
     res.render('boardPage.ejs', {
@@ -34,6 +43,7 @@ router.post('/', function (req, res) {
     });
 
 });
+
 
 function createNewActiveGame(req, res){
     let gameCode = Math.floor((Math.random() * 1000) + 1);
@@ -51,11 +61,11 @@ function joinActiveGame(req, res){
 
     ACTIVE_GAMES.forEach(function (game, index) {//for each game in ACTIVE_GAMES
         console.log('GAME CODE: ' + game.code);
-        console.log('SEARCH GAME CODE: ' + req.body.gameCode);
+        console.log('SEARCH GAME CODE: ' + req.query.gameCode);
         console.log('Joining players ID: ' + game.player2ID);
 
         let activeGame = game;
-        let searchGameCode = req.body.gameCode;
+        let searchGameCode = req.query.gameCode;
 
 
 
@@ -67,7 +77,7 @@ function joinActiveGame(req, res){
                 console.log('FLAG 2');
                 targetGame = game;
             } else if(game.player2ID === 'Not here yet'){//if game has space
-                console.log('FLAG 3');
+                console.log('CONDITION FLAG 3, game has space');
                 game.player2ID = req.session.userID;//add player2
                 ACTIVE_GAMES.splice(index, 1, game);//at current index: delete game, replace with updated game
                 targetGame = game;
@@ -77,5 +87,6 @@ function joinActiveGame(req, res){
 
     return targetGame;
 }
+
 
 module.exports = router;
