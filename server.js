@@ -1,8 +1,14 @@
+//classes
+let ActiveGame = require('./app/objects/ActiveGame');
+let Tile = require('./app/objects/Tile');
+let Checker = require('./app/objects/Checker');
+
 //modules
 let http = require('http');
 let bodyParser = require('body-parser');
 let session = require('express-session');
 let socketIo = require('socket.io');
+let path = require('path');
 
 let express = require("express");
 let app = express();
@@ -18,6 +24,8 @@ app.use(session({
     saveUninitialized : false
 }));
 
+app.use(express.static(path.join(__dirname, 'statics')));//nb: makes statics dir available to server
+
 app.set('view engine', 'ejs');
 
 //setup server
@@ -28,7 +36,18 @@ let io = socketIo(server);
 
 io.on("connection", async function(socket) {
     //on connection
-    console.log("A user connected to our websocket");
+    console.log("Websocket connection established...");
+
+
+    //TESTING STUFF
+    let testChecker = new Checker("red")
+    testChecker.makeKing();
+    let testTile = new Tile(testChecker);
+
+    let testBoardHTML = testTile.getBoardTileAsHTML('white');
+
+    console.log('sending Board Update');
+    socket.emit('updateBoard', testBoardHTML);
 });
 
 
@@ -46,6 +65,9 @@ app.use('/boardPage.ejs', boardPageRoute);
 let lobbyPageRoute = require('./routeHandlers/lobbyPage');
 app.use('/testLobbyPage.ejs', lobbyPageRoute);
 
+//test page
+let testPageRoute = require('./routeHandlers/testPage');
+app.use('/testPage.ejs', testPageRoute);
 
 
 app.get('*', function (request, response) {

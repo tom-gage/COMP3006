@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>board page</title>
+    <link rel="stylesheet" href="../statics/CSS/stylesheet.css">
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
         let socket = io();
 
-        <!--$(function(){-->
-        <!--    socket.emit('<%%>');-->
-        <!--})-->
     </script>
+
+
 </head>
 <body>
 <h1>board page reached!</h1>
@@ -21,6 +21,10 @@
 <p>vs</p>
 <h5>user2 = <%= username2%></h5>
 <br>
-<p><%= testVal%></p>
+<p>board tests start here</p>
+
+<div class="boardTile">
+
+</div>
 </body>
 </html>

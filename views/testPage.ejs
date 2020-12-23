@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test page for testing things</title>
+    <link rel="stylesheet" href="CSS/stylesheet.css">
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+        let socket = io();
+
+        socket.on('updateBoard', function (msg) {
+            console.log('board update received');
+            $('#board').html(msg);
+        })
+    </script>
+</head>
+
+<body>
+<h1>Test Page!</h1>
+
+<p>board tile test starts below</p>
+
+<div id="board">
+
+</div>
+
+
+
+</body>
+</html>

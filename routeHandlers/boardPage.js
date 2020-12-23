@@ -1,16 +1,13 @@
-let ActiveGame = require('../app/objectClasses/ActiveGame');
+let ActiveGame = require('../app/objects/ActiveGame');
 
 let express = require('express');
 let router = express.Router();
 
 //GET, join game
 router.get('/', function (req, res) {
-    console.log('GET REQUEST RECEIVED!');
     console.log('- - - - JOIN GAME REQUEST RECEIVED - - - -');
 
-    let game;
-
-    game = joinActiveGame(req, res);
+    let game = joinActiveGame(req, res);
 
     if(game != null){//if not null, serve page
         res.render('boardPage.ejs', {
@@ -38,8 +35,7 @@ router.post('/', function (req, res) {
     res.render('boardPage.ejs', {
         gameCode : game.code,
         username1 : game.player1ID,
-        username2 : game.player2ID,
-        testVal : ACTIVE_GAMES
+        username2 : game.player2ID
     });
 
 });

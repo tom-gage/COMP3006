@@ -1,0 +1,44 @@
+.boardTile {
+    display: inline-block;
+    width: 75px;
+    height: 75px;
+
+    border: 1px solid black;
+    box-sizing: border-box;
+    font-size: 11px;
+
+    padding: 10px;
+    margin: -3px;
+}
+
+.boardTile.white{
+    background-color: white;
+}
+
+.boardTile.black{
+    background-color: black;
+}
+
+.dot {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dot.red{
+    background-color: red;
+}
+
+.dot.red.king{
+    border-color: hotpink;
+}
+
+.dot.blue{
+    background-color: blue;
+}
+
+.dot.blue.king{
+    background-color: blue;
+    border-color: hotpink;
+}

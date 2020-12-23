@@ -20,7 +20,7 @@ router.post('/', function (req, res) {
     req.session.username = req.body.username;
 
     res.render('mainMenuPage.ejs', {
-        pageviews : req.session.page_views
+
     });
 });
 
