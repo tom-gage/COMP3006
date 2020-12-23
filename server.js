@@ -2,6 +2,7 @@
 let ActiveGame = require('./app/objects/ActiveGame');
 let Tile = require('./app/objects/Tile');
 let Checker = require('./app/objects/Checker');
+let TileBuilder = require('./app/utilityClasses/TileBuilder');
 
 //modules
 let http = require('http');
@@ -31,6 +32,8 @@ app.set('view engine', 'ejs');
 //setup server
 let server = http.createServer(app);
 
+
+
 //setup sockets
 let io = socketIo(server);
 
@@ -38,13 +41,14 @@ io.on("connection", async function(socket) {
     //on connection
     console.log("Websocket connection established...");
 
-
     //TESTING STUFF
-    let testChecker = new Checker("red")
-    testChecker.makeKing();
-    let testTile = new Tile(testChecker);
+    let testTile = new Tile().addColour('white').addChecker('blue');
 
-    let testBoardHTML = testTile.getBoardTileAsHTML('white');
+    testTile = new Tile().addColour('black').addChecker('red');
+
+    let testBoardHTML = testTile.getBoardTileAsHTML();
+
+
 
     console.log('sending Board Update');
     socket.emit('updateBoard', testBoardHTML);

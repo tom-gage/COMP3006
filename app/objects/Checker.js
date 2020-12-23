@@ -11,9 +11,9 @@ class Checker{
         let HTMLCheckerDiv = '<div class="dot ' + this.team;
 
         if(this.isKing){
-            HTMLCheckerDiv += ' king"';
+            HTMLCheckerDiv += ' king';
         }
-        return HTMLCheckerDiv += '></div>';
+        return HTMLCheckerDiv += '"></div>';
     }
 
     makeKing(){

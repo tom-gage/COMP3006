@@ -1,18 +1,37 @@
 class Tile{
-    Checker = require('Checker');
+    Checker = require('./Checker');
 
     //VARS
-    checker = new this.Checker('red');
+    colour;
+    checker;
 
     //CONSTRUCTOR
-    constructor(checker) {
-        this.checker = checker;
+    constructor() {
+        this.colour = undefined;
+        this.checker = undefined;
+    }
+
+    // constructor(tileBuilder) {
+    //     this.colour = tileBuilder.colour;
+    //     this.checker = tileBuilder.checker;
+    // }
+
+    //BUILDER FUNCTIONS
+    addColour(colour){
+        this.colour = colour;
+        return this;
+    }
+
+    addChecker(team){
+        this.checker = new this.Checker(team);
+        return this;
     }
 
 
+
     //FUNCTIONS
-    getBoardTileAsHTML(tileColour){
-        return '<div class="boardTile ' + tileColour + '">' +
+    getBoardTileAsHTML(){
+        return '<div class="boardTile ' + this.colour + '">' +
             this.getCheckerAsHTML() +
             '</div>';
     }
