@@ -37,8 +37,9 @@ class ActiveGame{
         for(let y = 0; y < this.boardState.length; y++){//for each row in board
             tileIndex++;
             for(let x = 0; x < this.numberOfCols; x++){//for each column/position in row
+                tile = new this.Tile().addCoodinateID(y, x);
+
                 tileIndex++;
-                tile = new this.Tile();
                 if(tileIndex & 1)//if tile index is odd
                 {
                     tile.addColour('white');

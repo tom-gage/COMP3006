@@ -7,7 +7,10 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
+    <!--
+    I know this is just a test page but we should really be putting our
+    js in a separate file. Shame on you.
+    -->
     <script>
         let socket = io();
 
@@ -15,13 +18,23 @@
             console.log('board update received');
             $('#board').html(msg);
         })
+
+    </script>
+
+    <script>
+        $(document).ready(function(){
+            $(document).on('click', '.boardTile', function (event) {//deviation from usual syntax to allow for dynamic elements
+                // console.log('tile clicked!');
+                console.log(this.id);
+            });
+        });
     </script>
 </head>
 
 <body>
 <h1>Test Page!</h1>
 
-<p>board tile test starts below</p>
+<p id="tester">board tile test starts below</p>
 
 <div id="board">
 

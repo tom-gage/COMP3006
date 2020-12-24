@@ -9,7 +9,7 @@ router.get('/', function (req, res) {
 
     let game = joinActiveGame(req, res);
 
-    if(game != null){//if not null, serve page
+    if(game != null){//if game exists, serve page
         res.render('boardPage.ejs', {
             gameCode : game.code,
             username1 : game.player1ID,
@@ -67,13 +67,13 @@ function joinActiveGame(req, res){
 
         if(activeGame.code.toString() === searchGameCode.toString()){//if there's an active game with a code matching the submitted code
             if(game.player1ID === req.session.userID){//if player is already in game as player 1, may seem redundant but it prevents player1 joining their own game
-                console.log('FLAG 1');
+                console.log('JOIN GAME CONDITION, player already in game as player1');
                 targetGame = game;
             } else if (game.player2ID === req.session.userID){//if player is already in game as player 2
-                console.log('FLAG 2');
+                console.log('JOIN GAME CONDITION, player already in game as player2');
                 targetGame = game;
-            } else if(game.player2ID === 'Not here yet'){//if game has space
-                console.log('CONDITION FLAG 3, game has space');
+            } else if(game.player2ID === 'Not here yet'){//if game has space, add player2 to game, update ACTIVE_GAMES
+                console.log('JOIN GAME CONDITION, game has space');
                 game.player2ID = req.session.userID;//add player2
                 ACTIVE_GAMES.splice(index, 1, game);//at current index: delete game, replace with updated game
                 targetGame = game;

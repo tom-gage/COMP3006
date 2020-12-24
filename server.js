@@ -50,8 +50,6 @@ io.on("connection", async function(socket) {
 
     console.log('sending Board Update');
     socket.emit('updateBoard', testBoardHTML);
-
-
 });
 
 
