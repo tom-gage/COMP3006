@@ -42,16 +42,16 @@ io.on("connection", async function(socket) {
     console.log("Websocket connection established...");
 
     //TESTING STUFF
-    let testTile = new Tile().addColour('white').addChecker('blue');
+    let testActiveGame = new ActiveGame(123, 111, 222);
 
-    testTile = new Tile().addColour('black').addChecker('red');
+    testActiveGame.initialiseBoardState();
 
-    let testBoardHTML = testTile.getBoardTileAsHTML();
-
-
+    let testBoardHTML = testActiveGame.getBoardStateAsHTML();
 
     console.log('sending Board Update');
     socket.emit('updateBoard', testBoardHTML);
+
+
 });
 
 
