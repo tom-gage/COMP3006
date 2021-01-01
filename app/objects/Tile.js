@@ -38,7 +38,7 @@ class Tile{
 
     //FUNCTIONS
     getBoardTileAsHTML(){
-        return '<div class="boardTile ' + this.colour + '" id="' + this.CoodinateID + '">' +
+        return '<div class="boardTile ' + this.colour + ' ' + this.hasChecker() +'" id="' + this.CoodinateID + '">' +
             this.getCheckerAsHTML() +
             '</div>';
     }
@@ -46,6 +46,14 @@ class Tile{
     getCheckerAsHTML(){
         if(this.checker){
             return this.checker.getAsHTML();
+        } else {
+            return '';
+        }
+    }
+
+    hasChecker(){
+        if(this.checker){
+            return 'occupied';
         } else {
             return '';
         }

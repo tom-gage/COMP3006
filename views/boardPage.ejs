@@ -3,12 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <title>board page</title>
-    <link rel="stylesheet" href="../statics/CSS/stylesheet.css">
+    <link rel="stylesheet" href="CSS/stylesheet.css">
+
+
+    <script src="JS/scripts.js"></script>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
         let socket = io();
+
+        let gameCode = "<%= gameCode%>";
+        let playerID = '<%= username1%>';
+        let moveArray = [];
+
+        socket.on('connect', function () {
+            console.log('socket id is: ' + socket.id);
+            console.log('sending handshake...');
+            socket.emit('handshake', socket.id);
+
+        });
+
+        socket.on('handshake response', function (msg) {
+            console.log('handshake response received, message is: ' + msg);
+        })
+
+
+        socket.on('updateBoard', function (msg) {
+            // console.log('board update received');
+            $('#board').html(msg);
+
+        })
+
+        $(document).ready(function(){
+            $(document).on('click', '.boardTile', function (event) {//deviation from usual syntax to allow for dynamic elements
+                // console.log('tile clicked!');
+                // console.log(this.classList);
+
+                prepareMove(this);
+            });
+        });
+
+        function prepareMove(tile){
+            if(moveArray.length > 0){
+                moveArray.push(tile.id);
+                console.log('MOVE PREPARED: ' + moveArray);
+                sendMove(gameCode, playerID, moveArray);
+                moveArray = [];
+            }
+            else if(tile.classList.contains('occupied')){
+                moveArray.push(tile.id);
+            }
+        }
+
+        function sendMove(gameCode, playerID, moveArray){
+            move = {
+                gameCode : gameCode,
+                playerID : playerID,
+                move : moveArray
+            }
+
+            socket.emit('moveRequest', JSON.stringify(move));
+        }
 
     </script>
 
@@ -17,13 +73,13 @@
 <body>
 <h1>board page reached!</h1>
 <h2>Game code is: <%= gameCode%></h2>
-<h5>user1 = <%= username1%> </h5>
+<h5>user1 session ID = <%= username1%> </h5>
 <p>vs</p>
-<h5>user2 = <%= username2%></h5>
+<h5>user2 session ID = <%= username2%></h5>
 <br>
 <p>board tests start here</p>
 
-<div class="boardTile">
+<div id="board">
 
 </div>
 </body>

@@ -38,6 +38,7 @@ let server = http.createServer(app);
 let io = socketIo(server);
 
 io.on("connection", async function(socket) {
+
     //on connection
     console.log("Websocket connection established...");
 
@@ -51,9 +52,19 @@ io.on("connection", async function(socket) {
     console.log('sending Board Update');
     socket.emit('updateBoard', testBoardHTML);
 
-    socket.on('test', async function(msg) {
-        console.log('message recieved: ' + msg);
+    socket.on('handshake', async function(msg) {
+        console.log('client handshake recieved, id is: ' + msg);
+        console.log('sending handshake response...');
+        // io.sockets.to(msg).emit('handshake response', 'handshake success');
+
+        io.to(msg).emit('handshake response', 'handshake success');
+    });
+
+    socket.on('moveRequest', async function (msg) {
+        console.log('move request received: ');
+        console.log(msg);
     })
+
 });
 
 

@@ -49,6 +49,8 @@ function createNewActiveGame(req, res){
 
     ACTIVE_GAMES.push(newGame);
 
+    console.log('new game created, gameCode: ' + gameCode + ', player1ID: ' + player1ID);
+
     return newGame;
 }
 
@@ -62,8 +64,6 @@ function joinActiveGame(req, res){
 
         let activeGame = game;
         let searchGameCode = req.query.gameCode;
-
-
 
         if(activeGame.code.toString() === searchGameCode.toString()){//if there's an active game with a code matching the submitted code
             if(game.player1ID === req.session.userID){//if player is already in game as player 1, may seem redundant but it prevents player1 joining their own game
