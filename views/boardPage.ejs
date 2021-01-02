@@ -57,10 +57,12 @@
         }
 
         function sendMove(gameCode, playerID, moveArray){
+
             move = {
                 gameCode : gameCode,
                 playerID : playerID,
-                move : moveArray
+                currentPos : moveArray[0],
+                requestedPos : moveArray[1]
             }
 
             socket.emit('moveRequest', JSON.stringify(move));

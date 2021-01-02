@@ -13,10 +13,7 @@ class Tile{
         this.checker = undefined;
     }
 
-    // constructor(tileBuilder) {
-    //     this.colour = tileBuilder.colour;
-    //     this.checker = tileBuilder.checker;
-    // }
+
 
     //BUILDER FUNCTIONS
     addCoodinateID(y, x){
@@ -57,6 +54,14 @@ class Tile{
         } else {
             return '';
         }
+    }
+
+    removeChecker(){
+        this.checker = undefined;
+    }
+
+    placeChecker(team){
+        this.checker = new this.Checker(team);
     }
 
 }

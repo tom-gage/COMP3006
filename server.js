@@ -63,10 +63,36 @@ io.on("connection", async function(socket) {
     socket.on('moveRequest', async function (msg) {
         console.log('move request received: ');
         console.log(msg);
+
+        let move = JSON.parse(msg);
+
+        let targetGame = findActiveGame(move.gameCode);
+
+        // targetGame = new ActiveGame(targetGame.gameCode, targetGame.player1ID, targetGame.player2ID);
+
+        if(targetGame){
+
+            targetGame.makeMove(move.currentPos, move.requestedPos);
+
+            socket.emit('updateBoard', targetGame.getBoardStateAsHTML());
+        }
     })
 
 });
 
+//functions
+function findActiveGame(gameCode){
+    let targetGame;
+    ACTIVE_GAMES.forEach(function (activeGame, index) {//for each game in ACTIVE_GAMES
+        // console.log('Active Game Search: ' + activeGame.code.toString() + ' VS ' + gameCode.toString());
+        if(activeGame.code.toString() === gameCode.toString()){//if there's an active game with a code matching the submitted code
+            targetGame = activeGame;
+
+        }
+    });
+
+    return targetGame;
+}
 
 
 //routes
