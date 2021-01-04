@@ -87,7 +87,6 @@ function findActiveGame(gameCode){
         // console.log('Active Game Search: ' + activeGame.code.toString() + ' VS ' + gameCode.toString());
         if(activeGame.code.toString() === gameCode.toString()){//if there's an active game with a code matching the submitted code
             targetGame = activeGame;
-
         }
     });
 

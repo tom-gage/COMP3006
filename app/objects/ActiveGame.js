@@ -43,16 +43,19 @@ class ActiveGame{
         currentPos = this.parsePosition(currentPos);
         requestedPos = this.parsePosition(requestedPos);
 
-        let startingTile = this.boardState[currentPos[0]][currentPos[1]];
-        let endingTile = this.boardState[requestedPos[0]][requestedPos[1]];
+        let startingTile = this.boardState[currentPos.y][currentPos.x];
+        let endingTile = this.boardState[requestedPos.y][requestedPos.x];
+
 
         //remove checker at current location
         //place checker at requested location
-        endingTile.placeChecker(startingTile.checker.team);
-        startingTile.removeChecker();
+        if(this.validateMove(currentPos, requestedPos, startingTile, endingTile)){
+            endingTile.placeChecker(startingTile.checker.team);
+            startingTile.removeChecker();
 
+            this.updateActiveGames();
+        }
 
-        this.updateActiveGames();
 
         this.prettyPrintBoardState();
     }
@@ -60,11 +63,94 @@ class ActiveGame{
     parsePosition(position){
         let y = position.charAt(0);
         let x = position.charAt(2);
-        return [parseInt(y), parseInt(x)];
+
+
+
+        return {
+            y : parseInt(y),
+            x : parseInt(x)
+        }
+
     }
 
-    validateMove(){
+    validateMove(currentPos, requestedPos, startingTile, endingTile){//NEEDS MORE EFFICIENT
+        console.log('BEGIN MOVE VALIDATION');
 
+        switch(startingTile.checker.team){
+            case 'red':
+                console.log('red validation in progress...');
+                console.log('end tile checker is of type: ' + typeof endingTile.checker);
+
+                if(typeof endingTile.checker !== 'undefined'){//if checker has tile
+                    console.log('2nd check, end tile checker is of type: ' + typeof endingTile.checker);
+
+                    if(endingTile.checker.team === 'red') {//and tile is red
+                        console.log('red move INVALID');
+                        return false;
+                    }
+                }
+
+                if(!startingTile.checker.king){//if checker is not king
+                    if(requestedPos.y !== currentPos.y + 1){//perform vertical validation
+                        console.log('red move Y INVALID!');
+                        return false;
+                    }
+                }
+
+                if(requestedPos.x !== currentPos.x + 1 && requestedPos.x !== currentPos.x - 1){//perform horizontal validation
+                    // if(requestedPos.x !== currentPos.x - 1){
+                    console.log('red move X INVALID!');
+                    return false;
+                    // }
+                } else {
+                    console.log('red move valid!');
+                    return true;
+                }
+
+
+            case 'blue':
+                console.log('blue validation in progress...');
+                console.log('requestedPos.y is: ' + requestedPos.y);
+                console.log('requestedPos.x is: ' + requestedPos.x);
+
+                console.log('currentPos.y is: ' + currentPos.y);
+                console.log('currentPos.x is: ' + currentPos.x);
+
+                if(typeof endingTile.checker !== 'undefined'){//if checker has tile
+                    console.log('2nd check, end tile checker is of type: ' + typeof endingTile.checker);
+
+                    if(endingTile.checker.team === 'blue') {//and tile is blue
+                        console.log('red move INVALID');
+                        return false;
+                    }
+                }
+
+                if(!startingTile.checker.king){//if checker is not king
+                    if(requestedPos.y !== currentPos.y - 1){//perform vertical validation
+                        console.log('blue move Y INVALID!');
+                        return false;
+                    }
+                }
+
+                if(requestedPos.x !== currentPos.x + 1 && requestedPos.x !== currentPos.x - 1){//horizontal validation
+                    // if(requestedPos.x !== currentPos.x - 1){
+                        console.log('blue move X INVALID!');
+                        // console.log('requestedPos.x is: ' + requestedPos.x);
+                        // console.log('currentPos.x is: ' + currentPos.x);
+                        // console.log('currentPos.x +1 is: ' + (currentPos.x + 1));
+                        // console.log('currentPos.x -1 is: ' + (currentPos.x - 1));
+                        return false;
+                    // }
+                } else {
+                    console.log('blue move valid!');
+                    return true;
+                }
+
+            default:
+                console.log('validation defaulted!');
+                return false;
+
+        }
     }
 
     updateActiveGames(){
