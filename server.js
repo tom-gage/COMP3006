@@ -83,11 +83,9 @@ io.on("connection", async function(socket) {
 
         let targetGame = findActiveGame(move.gameCode);
 
-        // targetGame = new ActiveGame(targetGame.gameCode, targetGame.player1ID, targetGame.player2ID);
-
         if(targetGame){
 
-            targetGame.makeMove(move.currentPos, move.requestedPos);
+            targetGame.makeMove(move.currentPos, move.requestedPos, move.playerID);
 
             console.log('sending board update...');
             // socket.emit('updateBoard', targetGame.getBoardStateAsHTML());

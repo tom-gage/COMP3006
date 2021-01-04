@@ -8,6 +8,8 @@ class ActiveGame{
     player1SocketID;
     player2SocketID;
 
+    currentTurn = 'red';
+
     numberOfCols = 8;
 
     row7;
@@ -39,9 +41,9 @@ class ActiveGame{
         this.initialiseBoardState();
     }
 
-    makeMove(currentPos, requestedPos){
-        this.prettyPrintBoardState();
-        console.log('making move...' + currentPos + ' to ' + requestedPos + '...');
+    makeMove(currentPos, requestedPos, playerID){
+        // this.prettyPrintBoardState();
+        console.log('requested move...' + currentPos + ' to ' + requestedPos + '...');
 
 
         currentPos = this.parsePosition(currentPos);
@@ -53,10 +55,12 @@ class ActiveGame{
 
         //remove checker at current location
         //place checker at requested location
-        if(this.validateMove(currentPos, requestedPos, startingTile, endingTile)){
+        if(this.validateMove(currentPos, requestedPos, startingTile, endingTile, this.currentTurn, playerID)){
             endingTile.placeChecker(startingTile.checker.team);
             startingTile.removeChecker();
 
+            this.switchCurrentTurn();
+            
             this.updateActiveGames();
         }
 
@@ -77,8 +81,22 @@ class ActiveGame{
 
     }
 
-    validateMove(currentPos, requestedPos, startingTile, endingTile){
+    validateMove(currentPos, requestedPos, startingTile, endingTile, currentTurn, currentPlayerID){
         console.log('BEGIN MOVE VALIDATION');
+
+        if(currentTurn === 'red' && currentPlayerID !== this.player1ID){
+            console.log('move INVALID, not your turn');
+            return false;
+        } else if(currentTurn === 'blue' && currentPlayerID !== this.player2ID){
+            console.log('move INVALID, not your turn');
+            return false;
+        }
+
+        if(currentTurn !== startingTile.checker.team){
+            console.log('move INVALID, not your checker');
+            return false;
+        }
+
 
         if(typeof endingTile.checker !== 'undefined'){//if ending tile has checker
             if(endingTile.checker.team === startingTile.checker.team) {//and checker is on same team
@@ -134,6 +152,16 @@ class ActiveGame{
                 ACTIVE_GAMES.splice(index, 1, thisGame);//at current index: delete game, replace with updated game
             }
         });
+    }
+
+    switchCurrentTurn(){
+        if(this.currentTurn === 'red'){
+            this.currentTurn = 'blue';
+        } else if(this.currentTurn === 'blue'){
+            this.currentTurn = 'red'
+        } else {
+            console.log('something has gone wrong...');
+        }
     }
 
     prettyPrintBoardState(){
