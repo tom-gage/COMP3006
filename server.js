@@ -49,15 +49,30 @@ io.on("connection", async function(socket) {
 
     let testBoardHTML = testActiveGame.getBoardStateAsHTML();
 
-    console.log('sending Board Update');
-    socket.emit('updateBoard', testBoardHTML);
+    // console.log('sending Board Update');
+    // socket.emit('updateBoard', testBoardHTML);
 
-    socket.on('handshake', async function(msg) {
-        console.log('client handshake recieved, id is: ' + msg);
-        console.log('sending handshake response...');
-        // io.sockets.to(msg).emit('handshake response', 'handshake success');
+    socket.on('joiningHandshake', async function(msg) {
+        console.log('client joining handshake received, id is: ' + msg);
 
-        io.to(msg).emit('handshake response', 'handshake success');
+        let handshake = JSON.parse(msg);
+
+        let targetGame = findActiveGame(handshake.gameCode);
+
+        console.log('handshake player id: ' + handshake.playerID);
+        console.log('target game player1 id: ' + targetGame.player1ID);
+        console.log('target game player2 id: ' + targetGame.player1ID);
+
+        if(handshake.playerID === targetGame.player1ID){
+            targetGame.player1SocketID = handshake.socketID;
+        } else if(handshake.playerID === targetGame.player2ID){
+            targetGame.player2SocketID = handshake.socketID;
+        }
+
+        updateActiveGame(targetGame);
+
+        console.log('sending initial board update...');
+        socket.emit('updateBoard', targetGame.getBoardStateAsHTML());
     });
 
     socket.on('moveRequest', async function (msg) {
@@ -74,7 +89,14 @@ io.on("connection", async function(socket) {
 
             targetGame.makeMove(move.currentPos, move.requestedPos);
 
-            socket.emit('updateBoard', targetGame.getBoardStateAsHTML());
+            console.log('sending board update...');
+            // socket.emit('updateBoard', targetGame.getBoardStateAsHTML());
+
+            console.log('sending to (player1): ' + targetGame.player1SocketID);
+            console.log('sending to (player2): ' + targetGame.player2SocketID);
+
+            io.to(targetGame.player1SocketID).emit('updateBoard', targetGame.getBoardStateAsHTML());
+            io.to(targetGame.player2SocketID).emit('updateBoard', targetGame.getBoardStateAsHTML());
         }
     })
 
@@ -83,14 +105,26 @@ io.on("connection", async function(socket) {
 //functions
 function findActiveGame(gameCode){
     let targetGame;
+    console.log('finding active game...');
     ACTIVE_GAMES.forEach(function (activeGame, index) {//for each game in ACTIVE_GAMES
-        // console.log('Active Game Search: ' + activeGame.code.toString() + ' VS ' + gameCode.toString());
+        console.log('Active Game Search: ' + activeGame.code.toString() + ' VS ' + gameCode.toString());
         if(activeGame.code.toString() === gameCode.toString()){//if there's an active game with a code matching the submitted code
             targetGame = activeGame;
+            console.log('game found! game code is: ' + targetGame.code);
         }
     });
 
     return targetGame;
+}
+
+function updateActiveGame(updateGame){
+    console.log('updating ACTIVE_GAMES...');
+    ACTIVE_GAMES.forEach(function (activeGame, index) {//for each game in ACTIVE_GAMES
+        if(activeGame.code.toString() === updateGame.code.toString()){//if there's an active game with a code matching the submitted code
+            ACTIVE_GAMES.splice(index, 1, updateGame);//at current index: delete game, replace with updated game
+            console.log('active game updated! game code is: ' + updateGame.code);
+        }
+    });
 }
 
 

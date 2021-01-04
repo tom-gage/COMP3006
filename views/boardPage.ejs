@@ -14,13 +14,20 @@
         let socket = io();
 
         let gameCode = "<%= gameCode%>";
-        let playerID = '<%= username1%>';
+        let playerID = '<%= thisPlayerID%>';
         let moveArray = [];
 
         socket.on('connect', function () {
             console.log('socket id is: ' + socket.id);
+
+            handshake = {
+                gameCode : gameCode,
+                playerID : playerID,
+                socketID : socket.id
+            }
+
             console.log('sending handshake...');
-            socket.emit('handshake', socket.id);
+            socket.emit('joiningHandshake', JSON.stringify(handshake));
 
         });
 
@@ -30,7 +37,7 @@
 
 
         socket.on('updateBoard', function (msg) {
-            // console.log('board update received');
+            console.log('board update received');
             $('#board').html(msg);
 
         })
@@ -75,9 +82,9 @@
 <body>
 <h1>board page reached!</h1>
 <h2>Game code is: <%= gameCode%></h2>
-<h5>user1 session ID = <%= username1%> </h5>
+<h5>user1 session ID = <%= player1ID%> </h5>
 <p>vs</p>
-<h5>user2 session ID = <%= username2%></h5>
+<h5>user2 session ID = <%= player2ID%></h5>
 <br>
 <p>board tests start here</p>
 

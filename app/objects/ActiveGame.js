@@ -4,6 +4,10 @@ class ActiveGame{
     code;
     player1ID;
     player2ID;
+
+    player1SocketID;
+    player2SocketID;
+
     numberOfCols = 8;
 
     row7;
@@ -73,82 +77,49 @@ class ActiveGame{
 
     }
 
-    validateMove(currentPos, requestedPos, startingTile, endingTile){//NEEDS MORE EFFICIENT
+    validateMove(currentPos, requestedPos, startingTile, endingTile){
         console.log('BEGIN MOVE VALIDATION');
+
+        if(typeof endingTile.checker !== 'undefined'){//if ending tile has checker
+            if(endingTile.checker.team === startingTile.checker.team) {//and checker is on same team
+                console.log('move INVALID, tile occupied by same team');
+                return false;
+            }
+        }
+
+        if(requestedPos.x !== currentPos.x + 1 && requestedPos.x !== currentPos.x - 1){//perform horizontal validation
+            console.log('move INVALID, illegal X movement');
+            return false;
+        }
+
 
         switch(startingTile.checker.team){
             case 'red':
-                console.log('red validation in progress...');
-                console.log('end tile checker is of type: ' + typeof endingTile.checker);
-
-                if(typeof endingTile.checker !== 'undefined'){//if checker has tile
-                    console.log('2nd check, end tile checker is of type: ' + typeof endingTile.checker);
-
-                    if(endingTile.checker.team === 'red') {//and tile is red
-                        console.log('red move INVALID');
-                        return false;
-                    }
-                }
-
                 if(!startingTile.checker.king){//if checker is not king
                     if(requestedPos.y !== currentPos.y + 1){//perform vertical validation
-                        console.log('red move Y INVALID!');
+                        console.log('move INVALID, illegal Y movement');
                         return false;
                     }
                 }
 
-                if(requestedPos.x !== currentPos.x + 1 && requestedPos.x !== currentPos.x - 1){//perform horizontal validation
-                    // if(requestedPos.x !== currentPos.x - 1){
-                    console.log('red move X INVALID!');
-                    return false;
-                    // }
-                } else {
-                    console.log('red move valid!');
-                    return true;
-                }
-
+                console.log('valid move');
+                return true;
 
             case 'blue':
-                console.log('blue validation in progress...');
-                console.log('requestedPos.y is: ' + requestedPos.y);
-                console.log('requestedPos.x is: ' + requestedPos.x);
-
-                console.log('currentPos.y is: ' + currentPos.y);
-                console.log('currentPos.x is: ' + currentPos.x);
-
-                if(typeof endingTile.checker !== 'undefined'){//if checker has tile
-                    console.log('2nd check, end tile checker is of type: ' + typeof endingTile.checker);
-
-                    if(endingTile.checker.team === 'blue') {//and tile is blue
-                        console.log('red move INVALID');
-                        return false;
-                    }
-                }
-
                 if(!startingTile.checker.king){//if checker is not king
                     if(requestedPos.y !== currentPos.y - 1){//perform vertical validation
-                        console.log('blue move Y INVALID!');
+                        console.log('move INVALID, illegal Y movement');
                         return false;
                     }
                 }
 
-                if(requestedPos.x !== currentPos.x + 1 && requestedPos.x !== currentPos.x - 1){//horizontal validation
-                    // if(requestedPos.x !== currentPos.x - 1){
-                        console.log('blue move X INVALID!');
-                        // console.log('requestedPos.x is: ' + requestedPos.x);
-                        // console.log('currentPos.x is: ' + currentPos.x);
-                        // console.log('currentPos.x +1 is: ' + (currentPos.x + 1));
-                        // console.log('currentPos.x -1 is: ' + (currentPos.x - 1));
-                        return false;
-                    // }
-                } else {
-                    console.log('blue move valid!');
-                    return true;
-                }
+                console.log('valid move');
+                return true;
 
             default:
                 console.log('validation defaulted!');
                 return false;
+
 
         }
     }

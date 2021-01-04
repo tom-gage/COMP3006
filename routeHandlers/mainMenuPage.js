@@ -4,7 +4,7 @@ let router = express.Router();
 router.get('/', function (req, res) {
     //set user ID
     if(!req.session.userID){
-        req.session.userID = Math.floor((Math.random() * 1000) + 1);//should be random ID
+        req.session.userID = Math.floor((Math.random() * 1000) + 1).toString();//should be random ID
         req.session.username = '';
     }
 
