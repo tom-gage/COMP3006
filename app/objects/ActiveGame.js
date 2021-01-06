@@ -57,10 +57,11 @@ class ActiveGame{
         //remove checker at current location
         //place checker at requested location
         if(this.validateMove(currentPos, requestedPos, startingTile, endingTile, this.currentTurn, playerID)){
-            endingTile.placeChecker(startingTile.checker.team);
+            endingTile.placeChecker(startingTile.checker);
             startingTile.removeChecker();
 
 
+            this.makeKings();
             this.switchCurrentTurn();
             this.determineGameover();
             this.updateActiveGames();
@@ -85,6 +86,10 @@ class ActiveGame{
 
     validateMove(currentPos, requestedPos, startingTile, endingTile, currentTurn, currentPlayerID){
         console.log('BEGIN MOVE VALIDATION');
+
+        console.log('BUT NOT REALLY');//TEST STUFF
+        return true;
+
         if(this.gameOver){
             console.log('move INVALID, game is over');
             return false;
@@ -155,6 +160,32 @@ class ActiveGame{
         ACTIVE_GAMES.forEach(function (activeGame, index) {//for each game in ACTIVE_GAMES
             if(activeGame.code.toString() === gameCode.toString()){//if there's an active game with a code matching the submitted code
                 ACTIVE_GAMES.splice(index, 1, thisGame);//at current index: delete game, replace with updated game
+            }
+        });
+    }
+
+    makeKings(){
+        let tile;
+        let numberOfCols = this.numberOfCols;
+        let length = this.boardState.length;
+
+        this.boardState[0].forEach(function (tile, index) {
+
+            console.log('checking king suitability, team is: ' + tile.getCheckerTeam() + ', column position is: ' + index);
+
+            if(tile.getCheckerTeam() === 'blue'){
+                console.log('made blue checker king');
+                tile.makeCheckerKing();
+            }
+        });
+
+        this.boardState[this.boardState.length - 1].forEach(function (tile, index) {
+
+            console.log('checking king suitability, team is: ' + tile.getCheckerTeam() + ', column position is: ' + index);
+
+            if(tile.getCheckerTeam() === 'red'){
+                console.log('made red checker king');
+                tile.makeCheckerKing();
             }
         });
     }

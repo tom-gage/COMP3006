@@ -60,8 +60,12 @@ class Tile{
         this.checker = undefined;
     }
 
-    placeChecker(team){
-        this.checker = new this.Checker(team);
+    placeChecker(checker){
+        this.checker = new this.Checker(checker.team);
+        if(checker.isKing){
+            this.checker.makeKing();
+        }
+
     }
 
     getCheckerTeam(){
@@ -69,6 +73,12 @@ class Tile{
             return this.checker.team;
         } else{
             return '';
+        }
+    }
+
+    makeCheckerKing(){
+        if(this.checker){
+            this.checker.makeKing();
         }
     }
 
