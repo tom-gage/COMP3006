@@ -8,10 +8,12 @@ class ActiveGame{
     player1SocketID;
     player2SocketID;
 
+    gameOver = false;
+    winningTeam = 'none';
+
     currentTurn = 'red';
 
     numberOfCols = 8;
-
     row7;
     row6;
     row5;
@@ -20,7 +22,6 @@ class ActiveGame{
     row2;
     row1;
     row0;
-
     boardState = [
         this.row7 = [],
         this.row6 = [],
@@ -59,8 +60,9 @@ class ActiveGame{
             endingTile.placeChecker(startingTile.checker.team);
             startingTile.removeChecker();
 
+
             this.switchCurrentTurn();
-            
+            this.determineGameover();
             this.updateActiveGames();
         }
 
@@ -83,6 +85,10 @@ class ActiveGame{
 
     validateMove(currentPos, requestedPos, startingTile, endingTile, currentTurn, currentPlayerID){
         console.log('BEGIN MOVE VALIDATION');
+        if(this.gameOver){
+            console.log('move INVALID, game is over');
+            return false;
+        }
 
         if(currentTurn === 'red' && currentPlayerID !== this.player1ID){
             console.log('move INVALID, not your turn');
@@ -92,18 +98,18 @@ class ActiveGame{
             return false;
         }
 
-        if(currentTurn !== startingTile.checker.team){
+        if(currentTurn !== startingTile.getCheckerTeam()){
             console.log('move INVALID, not your checker');
             return false;
         }
 
 
-        if(typeof endingTile.checker !== 'undefined'){//if ending tile has checker
-            if(endingTile.checker.team === startingTile.checker.team) {//and checker is on same team
+        // if(typeof endingTile.checker !== 'undefined'){//if ending tile has checker
+            if(endingTile.getCheckerTeam() === startingTile.getCheckerTeam()) {//and checker is on same team
                 console.log('move INVALID, tile occupied by same team');
                 return false;
             }
-        }
+        // }
 
         if(requestedPos.x !== currentPos.x + 1 && requestedPos.x !== currentPos.x - 1){//perform horizontal validation
             console.log('move INVALID, illegal X movement');
@@ -147,7 +153,6 @@ class ActiveGame{
         let gameCode = this.code;
 
         ACTIVE_GAMES.forEach(function (activeGame, index) {//for each game in ACTIVE_GAMES
-
             if(activeGame.code.toString() === gameCode.toString()){//if there's an active game with a code matching the submitted code
                 ACTIVE_GAMES.splice(index, 1, thisGame);//at current index: delete game, replace with updated game
             }
@@ -161,6 +166,35 @@ class ActiveGame{
             this.currentTurn = 'red'
         } else {
             console.log('something has gone wrong...');
+        }
+    }
+
+    determineGameover(){
+        let reds = [];
+        let blues = [];
+        let tile;
+
+        for(let y = 0; y < this.boardState.length; y++){//for each row in board
+            for(let x = 0; x < this.numberOfCols; x++){//for each column/position in row
+                tile = this.boardState[y][x];
+                if(tile.getCheckerTeam() === 'red'){
+                    reds.push(tile);
+                } else if(tile.getCheckerTeam() === 'blue'){
+                    blues.push(tile);
+                }
+            }
+        }
+
+        if(reds.length <= 0){
+            this.gameOver = true;
+            this.winningTeam = 'Blue';
+            return true;
+        } else if(blues.length <= 0){
+            this.gameOver = true;
+            this.winningTeam = 'Red';
+            return true;
+        } else {
+            return false;
         }
     }
 

@@ -64,6 +64,14 @@ class Tile{
         this.checker = new this.Checker(team);
     }
 
+    getCheckerTeam(){
+        if(this.checker){
+            return this.checker.team;
+        } else{
+            return '';
+        }
+    }
+
 }
 
 module.exports = Tile;

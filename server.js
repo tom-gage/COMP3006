@@ -75,6 +75,10 @@ io.on("connection", async function(socket) {
         socket.emit('updateBoard', targetGame.getBoardStateAsHTML());
     });
 
+    socket.on('debug', async function (msg) {
+        console.log('DEBUG!');
+    });
+
     socket.on('moveRequest', async function (msg) {
         console.log('move request received: ');
         console.log(msg);
@@ -85,16 +89,30 @@ io.on("connection", async function(socket) {
 
         if(targetGame){
 
+
+            //TEST STUFF, REMOVE
+            // targetGame.boardState[0].forEach(function (tile,  index) {
+            //    tile.removeChecker();
+            // });
+
             targetGame.makeMove(move.currentPos, move.requestedPos, move.playerID);
 
-            console.log('sending board update...');
-            // socket.emit('updateBoard', targetGame.getBoardStateAsHTML());
+            //check for win/loss condition
+            if(targetGame.gameOver){
+                console.log(targetGame.winningTeam + ' team won!');
+                io.to(targetGame.player1SocketID).emit('updateGameMessage', targetGame.winningTeam + ' team won!');
+                io.to(targetGame.player2SocketID).emit('updateGameMessage', targetGame.winningTeam + ' team won!');
+            }
 
+
+            console.log('sending board update...');
             console.log('sending to (player1): ' + targetGame.player1SocketID);
             console.log('sending to (player2): ' + targetGame.player2SocketID);
 
             io.to(targetGame.player1SocketID).emit('updateBoard', targetGame.getBoardStateAsHTML());
             io.to(targetGame.player2SocketID).emit('updateBoard', targetGame.getBoardStateAsHTML());
+
+
         }
     })
 
@@ -114,6 +132,8 @@ function findActiveGame(gameCode){
 
     return targetGame;
 }
+
+//socket message send handler NEEDED?
 
 function updateActiveGame(updateGame){
     console.log('updating ACTIVE_GAMES...');

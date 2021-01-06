@@ -31,7 +31,10 @@
 
         });
 
-
+        socket.on('updateGameMessage', function (msg) {
+            console.log('updateGameMessage recieved!');
+            $('#gameMessage').html(msg);
+        })
 
         socket.on('updateBoard', function (msg) {
             console.log('board update received');
@@ -45,6 +48,12 @@
                 // console.log(this.classList);
 
                 prepareMove(this);
+            });
+
+            $(document).on('click', '#debugTrigger', function (event) {//deviation from usual syntax to allow for dynamic elements
+                console.log('debug trigger clicked!');
+
+                socket.emit('debug');
             });
         });
 
@@ -83,8 +92,9 @@
 <p>vs</p>
 <h5>user2 session ID = <%= player2ID%></h5>
 <br>
-<p>board tests start here</p>
 
+<p id="debugTrigger">debug trigger here!</p>
+<p id="gameMessage"></p>
 <div id="board">
 
 </div>
