@@ -121,12 +121,12 @@ io.on("connection", async function(socket) {
 //functions
 function findActiveGame(gameCode){
     let targetGame;
-    console.log('finding active game...');
+    // console.log('finding active game...');
     ACTIVE_GAMES.forEach(function (activeGame, index) {//for each game in ACTIVE_GAMES
-        console.log('Active Game Search: ' + activeGame.code.toString() + ' VS ' + gameCode.toString());
+        // console.log('Active Game Search: ' + activeGame.code.toString() + ' VS ' + gameCode.toString());
         if(activeGame.code.toString() === gameCode.toString()){//if there's an active game with a code matching the submitted code
             targetGame = activeGame;
-            console.log('game found! game code is: ' + targetGame.code);
+            // console.log('game found! game code is: ' + targetGame.code);
         }
     });
 
@@ -136,11 +136,11 @@ function findActiveGame(gameCode){
 //socket message send handler NEEDED?
 
 function updateActiveGame(updateGame){
-    console.log('updating ACTIVE_GAMES...');
+    // console.log('updating ACTIVE_GAMES...');
     ACTIVE_GAMES.forEach(function (activeGame, index) {//for each game in ACTIVE_GAMES
         if(activeGame.code.toString() === updateGame.code.toString()){//if there's an active game with a code matching the submitted code
             ACTIVE_GAMES.splice(index, 1, updateGame);//at current index: delete game, replace with updated game
-            console.log('active game updated! game code is: ' + updateGame.code);
+            // console.log('active game updated! game code is: ' + updateGame.code);
         }
     });
 }
