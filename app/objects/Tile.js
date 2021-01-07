@@ -90,6 +90,14 @@ class Tile{
         }
     }
 
+    isOccupied(){
+        if(this.checker){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }
 
 module.exports = Tile;
