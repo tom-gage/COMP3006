@@ -76,6 +76,14 @@ class Tile{
         }
     }
 
+    getCheckerKing(){
+        if(this.checker){
+            return this.checker.isKing;
+        } else{
+            return false;
+        }
+    }
+
     makeCheckerKing(){
         if(this.checker){
             this.checker.makeKing();

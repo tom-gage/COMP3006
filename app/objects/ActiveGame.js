@@ -87,14 +87,15 @@ class ActiveGame{
     validateMove(currentPos, requestedPos, startingTile, endingTile, currentTurn, currentPlayerID){
         console.log('BEGIN MOVE VALIDATION');
 
-        console.log('BUT NOT REALLY');//TEST STUFF
-        return true;
+        // console.log('BUT NOT REALLY');//TEST STUFF
+        // return true;
 
         if(this.gameOver){
             console.log('move INVALID, game is over');
             return false;
         }
 
+        //remove this for debug
         if(currentTurn === 'red' && currentPlayerID !== this.player1ID){
             console.log('move INVALID, not your turn');
             return false;
@@ -124,7 +125,7 @@ class ActiveGame{
 
         switch(startingTile.checker.team){
             case 'red':
-                if(!startingTile.checker.king){//if checker is not king
+                if(!startingTile.getCheckerKing()){//if checker is not king
                     if(requestedPos.y !== currentPos.y + 1){//perform vertical validation
                         console.log('move INVALID, illegal Y movement');
                         return false;
@@ -135,7 +136,7 @@ class ActiveGame{
                 return true;
 
             case 'blue':
-                if(!startingTile.checker.king){//if checker is not king
+                if(!startingTile.getCheckerKing()){//if checker is not king
                     if(requestedPos.y !== currentPos.y - 1){//perform vertical validation
                         console.log('move INVALID, illegal Y movement');
                         return false;
