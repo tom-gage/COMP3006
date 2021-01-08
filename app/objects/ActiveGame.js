@@ -1,18 +1,25 @@
 class ActiveGame{
     Tile = require('./Tile');
 
+
+
+    //ws vars
+    player1SocketID;
+    player2SocketID;
+
+    //game vars
     code;
     player1ID;
     player2ID;
 
-    player1SocketID;
-    player2SocketID;
-
     gameOver = false;
     winningTeam = 'none';
 
+    //turn vars
     currentTurn = 'red';
+    checkerHasBeenCaptured = false;
 
+    //board vars
     numberOfCols = 8;
     row7;
     row6;
@@ -61,6 +68,7 @@ class ActiveGame{
             startingTile.removeChecker();
 
 
+
             this.makeKings();
             this.switchCurrentTurn();
             this.determineGameover();
@@ -86,7 +94,6 @@ class ActiveGame{
 
     validateMove(currentPos, requestedPos, startingTile, endingTile, currentTurn, currentPlayerID){
         console.log('BEGIN MOVE VALIDATION');
-        console.log('move = current position: ' + currentPos.y + ', ' + currentPos.x + ' to requested position: ' + requestedPos.y + ', ' + requestedPos.x);
 
         // console.log('BUT NOT REALLY');//TEST STUFF
         // return true;
@@ -119,139 +126,248 @@ class ActiveGame{
             return false;
         }
 
+        console.log();
+        let attackYVal;
+        let moveYVal;
 
-
-
-
-        switch(startingTile.getCheckerTeam()){
-            case 'red':
-                console.log('requested position is, y: ' + requestedPos.y + ', x: ' + requestedPos.x);
-
-                if(requestedPos.x === currentPos.x - 2){//if negative 2x
-                    if(requestedPos.y === currentPos.y + 2){
-                        console.log('team of checker(' + (currentPos.y + 1).toString() + ', ' + (currentPos.x - 1).toString() +') being jumped is: ' + (this.boardState[currentPos.y + 1][currentPos.x - 1].getCheckerTeam()).toString());
-                        if(this.boardState[currentPos.y + 1][currentPos.x - 1].getCheckerTeam() === 'blue'){
-                            console.log('valid attacking move');
-                            this.boardState[currentPos.y + 1][currentPos.x - 1].removeChecker();
-                            return true;
-                        }
-
-                    } else if(requestedPos.y === currentPos.y - 2){
-                        if(startingTile.getCheckerKing()){
-                            if(this.boardState[currentPos.y - 1][currentPos.x - 1].getCheckerTeam() === 'blue'){
-                                console.log('valid attacking move');
-                                this.boardState[currentPos.y - 1][currentPos.x - 1].removeChecker();
-                                return true;
-                            }
-                        }
-                    }
-                } else if(requestedPos.x === currentPos.x + 2){//if positive 2x
-                    if(requestedPos.y === currentPos.y + 2){
-                        console.log('team of checker(' + (currentPos.y + 1).toString() + ', ' + (currentPos.x + 1).toString() +') being jumped is: ' + this.boardState[currentPos.y + 1][currentPos.x + 1].getCheckerTeam());
-
-                        if(this.boardState[currentPos.y + 1][currentPos.x + 1].getCheckerTeam() === 'blue'){
-                            console.log('valid attacking move');
-                            this.boardState[currentPos.y + 1][currentPos.x + 1].removeChecker();
-                            return true;
-                        }
-
-                    } else if(requestedPos.y === currentPos.y - 2){//
-                        if(startingTile.getCheckerKing()){
-                            if(this.boardState[currentPos.y - 1][currentPos.x + 1].getCheckerTeam() === 'blue'){
-                                console.log('valid attacking move');
-                                this.boardState[currentPos.y - 1][currentPos.x + 1].removeChecker();
-                                return true;
-                            }
-                        }
-                    }
-                }
-
-                if(requestedPos.x !== currentPos.x + 1 && requestedPos.x !== currentPos.x - 1){//perform horizontal validation
-                    console.log('move INVALID, illegal X movement');
-                    return false;
-                }
-
-                if(!startingTile.getCheckerKing()){//if checker is not king
-                    if(requestedPos.y !== currentPos.y + 1){//perform vertical validation
-                        console.log('move INVALID, illegal Y movement');
-                        return false;
-                    }
-                }
-
-                if(endingTile.isOccupied()){
-                    console.log('move INVALID, tile occupied');
-                    return false;
-                }
-
-                console.log('valid move');
-                return true;
-
-            case 'blue':
-                if(requestedPos.x === currentPos.x - 2){//if going left
-                    if(requestedPos.y === currentPos.y - 2){//if going up
-                        console.log('team of checker(' + (currentPos.y - 1).toString() + ', ' + (currentPos.x - 1).toString() +') being jumped is: ' + (this.boardState[currentPos.y - 1][currentPos.x - 1].getCheckerTeam()).toString());
-                        if(this.boardState[currentPos.y - 1][currentPos.x - 1].getCheckerTeam() === 'red'){
-                            console.log('valid attacking move');
-                            this.boardState[currentPos.y - 1][currentPos.x - 1].removeChecker();
-                            return true;
-                        }
-
-                    } else if(requestedPos.y === currentPos.y + 2){//if going down
-                        if(startingTile.getCheckerKing()){//if king
-                            if(this.boardState[currentPos.y + 1][currentPos.x - 1].getCheckerTeam() === 'red'){
-                                console.log('valid attacking move');
-                                this.boardState[currentPos.y + 1][currentPos.x - 1].removeChecker();
-                                return true;
-                            }
-                        }
-                    }
-                } else if(requestedPos.x === currentPos.x + 2){//if going right
-                    if(requestedPos.y === currentPos.y - 2){//if going up
-                        console.log('team of checker(' + (currentPos.y - 1).toString() + ', ' + (currentPos.x + 1).toString() +') being jumped is: ' + this.boardState[currentPos.y - 1][currentPos.x + 1].getCheckerTeam());
-
-                        if(this.boardState[currentPos.y - 1][currentPos.x + 1].getCheckerTeam() === 'red'){
-                            console.log('valid attacking move');
-                            this.boardState[currentPos.y - 1][currentPos.x + 1].removeChecker();
-                            return true;
-                        }
-
-                    } else if(requestedPos.y === currentPos.y + 2){//if going down
-                        if(startingTile.getCheckerKing()){//if king
-                            if(this.boardState[currentPos.y + 1][currentPos.x + 1].getCheckerTeam() === 'red'){
-                                console.log('valid attacking move');
-                                this.boardState[currentPos.y + 1][currentPos.x + 1].removeChecker();
-                                return true;
-                            }
-                        }
-                    }
-                }
-
-                if(requestedPos.x !== currentPos.x + 1 && requestedPos.x !== currentPos.x - 1){//perform horizontal validation
-                    console.log('move INVALID, illegal X movement');
-                    return false;
-                }
-
-                if(!startingTile.getCheckerKing()){//if checker is not king
-                    if(requestedPos.y !== currentPos.y - 1){//perform vertical validation
-                        console.log('move INVALID, illegal Y movement');
-                        return false;
-                    }
-                }
-
-                if(endingTile.isOccupied()){
-                    console.log('move INVALID, tile occupied');
-                    return false;
-                }
-
-                console.log('valid move');
-                return true;
-
-            default:
-                console.log('validation defaulted!');
-                return false;
-
-
+        if(startingTile.getCheckerTeam() === 'red'){
+            attackYVal = 2;
+            moveYVal = 1;
+        } else if(startingTile.getCheckerTeam() === 'blue'){
+            attackYVal = -2;
+            moveYVal = -1;
         }
+
+        // console.log('attackYVal is: ' + attackYVal);
+        // console.log('moveYVal is: ' + moveYVal);
+
+        switch (JSON.stringify(requestedPos)) {
+            case JSON.stringify({
+                y : currentPos.y + attackYVal,
+                x : currentPos.x - 2
+            }) :
+                if(!endingTile.isOccupied()){
+                    console.log('ATTACK UP(FORWARD) LEFT');
+                    return true;
+                }
+                break;
+
+            case JSON.stringify({
+                y : currentPos.y + attackYVal,
+                x : currentPos.x + 2
+            }) :
+                if(!endingTile.isOccupied()){
+                    console.log('ATTACK UP(FORWARD) RIGHT');
+                    return true;
+                }
+                break;
+
+            case JSON.stringify({
+                y : currentPos.y + attackYVal,
+                x : currentPos.x + 2
+            }) :
+                if (startingTile.getCheckerKing()){//if checker is king
+                    if(!endingTile.isOccupied()){
+                        console.log('ATTACK DOWN(BACKWARD) RIGHT');
+                        return true;
+                    }
+                }
+                break;
+
+            case JSON.stringify({
+                y : currentPos.y + attackYVal,
+                x : currentPos.x - 2
+            }) :
+                if (startingTile.getCheckerKing()){//if checker is king
+                    if(!endingTile.isOccupied()){
+                        console.log('ATTACK DOWN(BACKWARD) LEFT');
+                        return true;
+                    }
+                }
+                break;
+
+
+            case JSON.stringify({
+                y : currentPos.y + moveYVal,
+                x : currentPos.x - 1
+            }) :
+                if(!endingTile.isOccupied()){
+                    console.log('MOVE UP(FORWARD) LEFT');
+                    return true;
+                }
+                break;
+
+            case JSON.stringify({
+                y : currentPos.y + moveYVal,
+                x : currentPos.x + 1
+            }) :
+                if(!endingTile.isOccupied()){
+                    console.log('MOVE UP(FORWARD) RIGHT');
+                    return true;
+                }
+                break;
+
+            case JSON.stringify({
+                y : currentPos.y + moveYVal,
+                x : currentPos.x + 1
+            }) :
+                if (startingTile.getCheckerKing()){//if checker is king
+                    if(!endingTile.isOccupied()){
+                        console.log('MOVE DOWN(BACKWARD) RIGHT');
+                        return true;
+                    }
+                }
+                break;
+
+            case JSON.stringify({
+                y : currentPos.y + moveYVal,
+                x : currentPos.x - 1
+            }) :
+
+                if (startingTile.getCheckerKing()){//if checker is king
+                    if(!endingTile.isOccupied()){
+                        console.log('MOVE DOWN(BACKWARD) LEFT');
+                        return true;
+                    }
+
+                }
+                break;
+            default:
+                console.log('ERR or move invalid');
+                return false;
+        }
+
+
+
+        // switch(startingTile.getCheckerTeam()){
+        //     case 'red':
+        //         console.log('requested position is, y: ' + requestedPos.y + ', x: ' + requestedPos.x);
+        //
+        //         if(requestedPos.x === currentPos.x - 2){//if negative 2x
+        //             if(requestedPos.y === currentPos.y + 2){
+        //                 console.log('team of checker(' + (currentPos.y + 1).toString() + ', ' + (currentPos.x - 1).toString() +') being jumped is: ' + (this.boardState[currentPos.y + 1][currentPos.x - 1].getCheckerTeam()).toString());
+        //                 if(this.boardState[currentPos.y + 1][currentPos.x - 1].getCheckerTeam() === 'blue'){
+        //                     console.log('valid attacking move');
+        //                     this.boardState[currentPos.y + 1][currentPos.x - 1].removeChecker();
+        //                     return true;
+        //                 }
+        //
+        //             } else if(requestedPos.y === currentPos.y - 2){
+        //                 if(startingTile.getCheckerKing()){
+        //                     if(this.boardState[currentPos.y - 1][currentPos.x - 1].getCheckerTeam() === 'blue'){
+        //                         console.log('valid attacking move');
+        //                         this.boardState[currentPos.y - 1][currentPos.x - 1].removeChecker();
+        //                         return true;
+        //                     }
+        //                 }
+        //             }
+        //         } else if(requestedPos.x === currentPos.x + 2){//if positive 2x
+        //             if(requestedPos.y === currentPos.y + 2){
+        //                 console.log('team of checker(' + (currentPos.y + 1).toString() + ', ' + (currentPos.x + 1).toString() +') being jumped is: ' + this.boardState[currentPos.y + 1][currentPos.x + 1].getCheckerTeam());
+        //
+        //                 if(this.boardState[currentPos.y + 1][currentPos.x + 1].getCheckerTeam() === 'blue'){
+        //                     console.log('valid attacking move');
+        //                     this.boardState[currentPos.y + 1][currentPos.x + 1].removeChecker();
+        //                     return true;
+        //                 }
+        //
+        //             } else if(requestedPos.y === currentPos.y - 2){//
+        //                 if(startingTile.getCheckerKing()){
+        //                     if(this.boardState[currentPos.y - 1][currentPos.x + 1].getCheckerTeam() === 'blue'){
+        //                         console.log('valid attacking move');
+        //                         this.boardState[currentPos.y - 1][currentPos.x + 1].removeChecker();
+        //                         return true;
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //
+        //         if(requestedPos.x !== currentPos.x + 1 && requestedPos.x !== currentPos.x - 1){//perform horizontal validation
+        //             console.log('move INVALID, illegal X movement');
+        //             return false;
+        //         }
+        //
+        //         if(!startingTile.getCheckerKing()){//if checker is not king
+        //             if(requestedPos.y !== currentPos.y + 1){//perform vertical validation
+        //                 console.log('move INVALID, illegal Y movement');
+        //                 return false;
+        //             }
+        //         }
+        //
+        //         if(endingTile.isOccupied()){
+        //             console.log('move INVALID, tile occupied');
+        //             return false;
+        //         }
+        //
+        //         console.log('valid move');
+        //         return true;
+        //
+        //     case 'blue':
+        //         if(requestedPos.x === currentPos.x - 2){//if going left
+        //             if(requestedPos.y === currentPos.y - 2){//if going up
+        //                 console.log('team of checker(' + (currentPos.y - 1).toString() + ', ' + (currentPos.x - 1).toString() +') being jumped is: ' + (this.boardState[currentPos.y - 1][currentPos.x - 1].getCheckerTeam()).toString());
+        //                 if(this.boardState[currentPos.y - 1][currentPos.x - 1].getCheckerTeam() === 'red'){
+        //                     console.log('valid attacking move');
+        //                     this.boardState[currentPos.y - 1][currentPos.x - 1].removeChecker();
+        //                     return true;
+        //                 }
+        //
+        //             } else if(requestedPos.y === currentPos.y + 2){//if going down
+        //                 if(startingTile.getCheckerKing()){//if king
+        //                     if(this.boardState[currentPos.y + 1][currentPos.x - 1].getCheckerTeam() === 'red'){
+        //                         console.log('valid attacking move');
+        //                         this.boardState[currentPos.y + 1][currentPos.x - 1].removeChecker();
+        //                         return true;
+        //                     }
+        //                 }
+        //             }
+        //         } else if(requestedPos.x === currentPos.x + 2){//if going right
+        //             if(requestedPos.y === currentPos.y - 2){//if going up
+        //                 console.log('team of checker(' + (currentPos.y - 1).toString() + ', ' + (currentPos.x + 1).toString() +') being jumped is: ' + this.boardState[currentPos.y - 1][currentPos.x + 1].getCheckerTeam());
+        //
+        //                 if(this.boardState[currentPos.y - 1][currentPos.x + 1].getCheckerTeam() === 'red'){
+        //                     console.log('valid attacking move');
+        //                     this.boardState[currentPos.y - 1][currentPos.x + 1].removeChecker();
+        //                     return true;
+        //                 }
+        //
+        //             } else if(requestedPos.y === currentPos.y + 2){//if going down
+        //                 if(startingTile.getCheckerKing()){//if king
+        //                     if(this.boardState[currentPos.y + 1][currentPos.x + 1].getCheckerTeam() === 'red'){
+        //                         console.log('valid attacking move');
+        //                         this.boardState[currentPos.y + 1][currentPos.x + 1].removeChecker();
+        //                         return true;
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //
+        //         if(requestedPos.x !== currentPos.x + 1 && requestedPos.x !== currentPos.x - 1){//perform horizontal validation
+        //             console.log('move INVALID, illegal X movement');
+        //             return false;
+        //         }
+        //
+        //         if(!startingTile.getCheckerKing()){//if checker is not king
+        //             if(requestedPos.y !== currentPos.y - 1){//perform vertical validation
+        //                 console.log('move INVALID, illegal Y movement');
+        //                 return false;
+        //             }
+        //         }
+        //
+        //         if(endingTile.isOccupied()){
+        //             console.log('move INVALID, tile occupied');
+        //             return false;
+        //         }
+        //
+        //         console.log('valid move');
+        //         return true;
+        //
+        //     default:
+        //         console.log('validation defaulted!');
+        //         return false;
+        //
+        //
+        // }
     }
 
     updateActiveGames(){

@@ -111,11 +111,8 @@ io.on("connection", async function(socket) {
 
             io.to(targetGame.player1SocketID).emit('updateBoard', targetGame.getBoardStateAsHTML());
             io.to(targetGame.player2SocketID).emit('updateBoard', targetGame.getBoardStateAsHTML());
-
-
         }
     })
-
 });
 
 //functions
