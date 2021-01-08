@@ -1,9 +1,11 @@
 class Checker{
+    id;
     team;
     isKing = false;
     isCaptured = false;
 
-    constructor(team) {
+    constructor(id, team) {
+        this.id = id;
         this.team = team;
     }
 
