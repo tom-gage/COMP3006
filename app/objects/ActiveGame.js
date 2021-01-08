@@ -17,6 +17,7 @@ class ActiveGame{
 
     //turn vars
     currentTurn = 'red';
+    nextTurn = 'blue';
     checkerHasBeenCaptured = false;
 
     //board vars
@@ -51,8 +52,6 @@ class ActiveGame{
 
     makeMove(currentPos, requestedPos, playerID){
         // this.prettyPrintBoardState();
-        console.log('requested move...' + currentPos + ' to ' + requestedPos + '...');
-
 
         currentPos = this.parsePosition(currentPos);
         requestedPos = this.parsePosition(requestedPos);
@@ -60,9 +59,16 @@ class ActiveGame{
         let startingTile = this.boardState[currentPos.y][currentPos.x];
         let endingTile = this.boardState[requestedPos.y][requestedPos.x];
 
-
         //remove checker at current location
         //place checker at requested location
+        if(this.validateGameConditions()){
+            if(this.validateTravelingMove(currentPos, requestedPos, startingTile, endingTile)){
+                //do travel
+            } else if(this.validateAttackingMove(currentPos, requestedPos, startingTile, endingTile)){
+                //do attack + check for additional attack avenues for multi-capture plays
+            }
+        }
+
         if(this.validateMove(currentPos, requestedPos, startingTile, endingTile, this.currentTurn, playerID)){
             endingTile.placeChecker(startingTile.checker);
             startingTile.removeChecker();
@@ -104,21 +110,19 @@ class ActiveGame{
             return false;
         }
 
-        //remove this for easier debugging
-        // if(currentTurn === 'red' && currentPlayerID !== this.player1ID){
-        //     console.log('move INVALID, not your turn');
-        //     return false;
-        // } else if(currentTurn === 'blue' && currentPlayerID !== this.player2ID){
-        //     console.log('move INVALID, not your turn');
-        //     return false;
-        // }
+        // remove this for easier debugging
+        if(currentTurn === 'red' && currentPlayerID !== this.player1ID){
+            console.log('move INVALID, not your turn');
+            return false;
+        } else if(currentTurn === 'blue' && currentPlayerID !== this.player2ID){
+            console.log('move INVALID, not your turn');
+            return false;
+        }
 
-        // if(currentTurn !== startingTile.getCheckerTeam()){
-        //     console.log('move INVALID, not your checker');
-        //     return false;
-        // }
-
-
+        if(currentTurn !== startingTile.getCheckerTeam()){
+            console.log('move INVALID, not your checker');
+            return false;
+        }
 
         //movement validation
         if(endingTile.getCheckerTeam() === startingTile.getCheckerTeam()) {//and checker is on same team
@@ -126,248 +130,383 @@ class ActiveGame{
             return false;
         }
 
-        console.log();
-        let attackYVal;
-        let moveYVal;
 
-        if(startingTile.getCheckerTeam() === 'red'){
-            attackYVal = 2;
-            moveYVal = 1;
-        } else if(startingTile.getCheckerTeam() === 'blue'){
-            attackYVal = -2;
-            moveYVal = -1;
+
+        if(this.validateAttackingMove(currentPos, requestedPos, startingTile, endingTile)){
+            return true;
         }
 
-        // console.log('attackYVal is: ' + attackYVal);
-        // console.log('moveYVal is: ' + moveYVal);
-
-        switch (JSON.stringify(requestedPos)) {
-            case JSON.stringify({
-                y : currentPos.y + attackYVal,
-                x : currentPos.x - 2
-            }) :
-                if(!endingTile.isOccupied()){
-                    console.log('ATTACK UP(FORWARD) LEFT');
-                    return true;
-                }
-                break;
-
-            case JSON.stringify({
-                y : currentPos.y + attackYVal,
-                x : currentPos.x + 2
-            }) :
-                if(!endingTile.isOccupied()){
-                    console.log('ATTACK UP(FORWARD) RIGHT');
-                    return true;
-                }
-                break;
-
-            case JSON.stringify({
-                y : currentPos.y + attackYVal,
-                x : currentPos.x + 2
-            }) :
-                if (startingTile.getCheckerKing()){//if checker is king
-                    if(!endingTile.isOccupied()){
-                        console.log('ATTACK DOWN(BACKWARD) RIGHT');
-                        return true;
-                    }
-                }
-                break;
-
-            case JSON.stringify({
-                y : currentPos.y + attackYVal,
-                x : currentPos.x - 2
-            }) :
-                if (startingTile.getCheckerKing()){//if checker is king
-                    if(!endingTile.isOccupied()){
-                        console.log('ATTACK DOWN(BACKWARD) LEFT');
-                        return true;
-                    }
-                }
-                break;
-
-
-            case JSON.stringify({
-                y : currentPos.y + moveYVal,
-                x : currentPos.x - 1
-            }) :
-                if(!endingTile.isOccupied()){
-                    console.log('MOVE UP(FORWARD) LEFT');
-                    return true;
-                }
-                break;
-
-            case JSON.stringify({
-                y : currentPos.y + moveYVal,
-                x : currentPos.x + 1
-            }) :
-                if(!endingTile.isOccupied()){
-                    console.log('MOVE UP(FORWARD) RIGHT');
-                    return true;
-                }
-                break;
-
-            case JSON.stringify({
-                y : currentPos.y + moveYVal,
-                x : currentPos.x + 1
-            }) :
-                if (startingTile.getCheckerKing()){//if checker is king
-                    if(!endingTile.isOccupied()){
-                        console.log('MOVE DOWN(BACKWARD) RIGHT');
-                        return true;
-                    }
-                }
-                break;
-
-            case JSON.stringify({
-                y : currentPos.y + moveYVal,
-                x : currentPos.x - 1
-            }) :
-
-                if (startingTile.getCheckerKing()){//if checker is king
-                    if(!endingTile.isOccupied()){
-                        console.log('MOVE DOWN(BACKWARD) LEFT');
-                        return true;
-                    }
-
-                }
-                break;
-            default:
-                console.log('ERR or move invalid');
-                return false;
+        if(this.validateTravelingMove(currentPos, requestedPos, startingTile, endingTile)){
+           return true;
         }
 
+        return false;
 
+        // let attackForwardYVal;
+        // let attackBackwardYVal;
+        // let attackLeftXVal;
+        // let attackRightXVal;
+        //
+        // let moveForwardYVal;
+        // let moveBackwardYVal;
+        // let moveLeftXVal;
+        // let moveRightXVal;
 
-        // switch(startingTile.getCheckerTeam()){
-        //     case 'red':
-        //         console.log('requested position is, y: ' + requestedPos.y + ', x: ' + requestedPos.x);
+        // if(startingTile.getCheckerTeam() === 'red'){
+        //     attackForwardYVal = 2;
+        //     attackBackwardYVal = -2;
         //
-        //         if(requestedPos.x === currentPos.x - 2){//if negative 2x
-        //             if(requestedPos.y === currentPos.y + 2){
-        //                 console.log('team of checker(' + (currentPos.y + 1).toString() + ', ' + (currentPos.x - 1).toString() +') being jumped is: ' + (this.boardState[currentPos.y + 1][currentPos.x - 1].getCheckerTeam()).toString());
-        //                 if(this.boardState[currentPos.y + 1][currentPos.x - 1].getCheckerTeam() === 'blue'){
-        //                     console.log('valid attacking move');
-        //                     this.boardState[currentPos.y + 1][currentPos.x - 1].removeChecker();
-        //                     return true;
-        //                 }
+        //     attackLeftXVal = 2;
+        //     attackRightXVal = -2;
         //
-        //             } else if(requestedPos.y === currentPos.y - 2){
-        //                 if(startingTile.getCheckerKing()){
-        //                     if(this.boardState[currentPos.y - 1][currentPos.x - 1].getCheckerTeam() === 'blue'){
-        //                         console.log('valid attacking move');
-        //                         this.boardState[currentPos.y - 1][currentPos.x - 1].removeChecker();
-        //                         return true;
-        //                     }
-        //                 }
-        //             }
-        //         } else if(requestedPos.x === currentPos.x + 2){//if positive 2x
-        //             if(requestedPos.y === currentPos.y + 2){
-        //                 console.log('team of checker(' + (currentPos.y + 1).toString() + ', ' + (currentPos.x + 1).toString() +') being jumped is: ' + this.boardState[currentPos.y + 1][currentPos.x + 1].getCheckerTeam());
+        //     moveForwardYVal = 1;
+        //     moveBackwardYVal = -1;
         //
-        //                 if(this.boardState[currentPos.y + 1][currentPos.x + 1].getCheckerTeam() === 'blue'){
-        //                     console.log('valid attacking move');
-        //                     this.boardState[currentPos.y + 1][currentPos.x + 1].removeChecker();
-        //                     return true;
-        //                 }
+        //     moveLeftXVal = 1;
+        //     moveRightXVal = -1;
         //
-        //             } else if(requestedPos.y === currentPos.y - 2){//
-        //                 if(startingTile.getCheckerKing()){
-        //                     if(this.boardState[currentPos.y - 1][currentPos.x + 1].getCheckerTeam() === 'blue'){
-        //                         console.log('valid attacking move');
-        //                         this.boardState[currentPos.y - 1][currentPos.x + 1].removeChecker();
-        //                         return true;
-        //                     }
-        //                 }
-        //             }
-        //         }
+        // } else if(startingTile.getCheckerTeam() === 'blue'){
+        //     attackForwardYVal = -2;
+        //     attackBackwardYVal = 2;
         //
-        //         if(requestedPos.x !== currentPos.x + 1 && requestedPos.x !== currentPos.x - 1){//perform horizontal validation
-        //             console.log('move INVALID, illegal X movement');
-        //             return false;
-        //         }
+        //     attackLeftXVal = -2;
+        //     attackRightXVal = 2;
         //
-        //         if(!startingTile.getCheckerKing()){//if checker is not king
-        //             if(requestedPos.y !== currentPos.y + 1){//perform vertical validation
-        //                 console.log('move INVALID, illegal Y movement');
-        //                 return false;
-        //             }
-        //         }
+        //     moveForwardYVal = -1;
+        //     moveBackwardYVal = 1;
         //
-        //         if(endingTile.isOccupied()){
-        //             console.log('move INVALID, tile occupied');
-        //             return false;
-        //         }
-        //
-        //         console.log('valid move');
-        //         return true;
-        //
-        //     case 'blue':
-        //         if(requestedPos.x === currentPos.x - 2){//if going left
-        //             if(requestedPos.y === currentPos.y - 2){//if going up
-        //                 console.log('team of checker(' + (currentPos.y - 1).toString() + ', ' + (currentPos.x - 1).toString() +') being jumped is: ' + (this.boardState[currentPos.y - 1][currentPos.x - 1].getCheckerTeam()).toString());
-        //                 if(this.boardState[currentPos.y - 1][currentPos.x - 1].getCheckerTeam() === 'red'){
-        //                     console.log('valid attacking move');
-        //                     this.boardState[currentPos.y - 1][currentPos.x - 1].removeChecker();
-        //                     return true;
-        //                 }
-        //
-        //             } else if(requestedPos.y === currentPos.y + 2){//if going down
-        //                 if(startingTile.getCheckerKing()){//if king
-        //                     if(this.boardState[currentPos.y + 1][currentPos.x - 1].getCheckerTeam() === 'red'){
-        //                         console.log('valid attacking move');
-        //                         this.boardState[currentPos.y + 1][currentPos.x - 1].removeChecker();
-        //                         return true;
-        //                     }
-        //                 }
-        //             }
-        //         } else if(requestedPos.x === currentPos.x + 2){//if going right
-        //             if(requestedPos.y === currentPos.y - 2){//if going up
-        //                 console.log('team of checker(' + (currentPos.y - 1).toString() + ', ' + (currentPos.x + 1).toString() +') being jumped is: ' + this.boardState[currentPos.y - 1][currentPos.x + 1].getCheckerTeam());
-        //
-        //                 if(this.boardState[currentPos.y - 1][currentPos.x + 1].getCheckerTeam() === 'red'){
-        //                     console.log('valid attacking move');
-        //                     this.boardState[currentPos.y - 1][currentPos.x + 1].removeChecker();
-        //                     return true;
-        //                 }
-        //
-        //             } else if(requestedPos.y === currentPos.y + 2){//if going down
-        //                 if(startingTile.getCheckerKing()){//if king
-        //                     if(this.boardState[currentPos.y + 1][currentPos.x + 1].getCheckerTeam() === 'red'){
-        //                         console.log('valid attacking move');
-        //                         this.boardState[currentPos.y + 1][currentPos.x + 1].removeChecker();
-        //                         return true;
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //
-        //         if(requestedPos.x !== currentPos.x + 1 && requestedPos.x !== currentPos.x - 1){//perform horizontal validation
-        //             console.log('move INVALID, illegal X movement');
-        //             return false;
-        //         }
-        //
-        //         if(!startingTile.getCheckerKing()){//if checker is not king
-        //             if(requestedPos.y !== currentPos.y - 1){//perform vertical validation
-        //                 console.log('move INVALID, illegal Y movement');
-        //                 return false;
-        //             }
-        //         }
-        //
-        //         if(endingTile.isOccupied()){
-        //             console.log('move INVALID, tile occupied');
-        //             return false;
-        //         }
-        //
-        //         console.log('valid move');
-        //         return true;
-        //
-        //     default:
-        //         console.log('validation defaulted!');
-        //         return false;
-        //
+        //     moveLeftXVal = -1;
+        //     moveRightXVal = 1;
         //
         // }
+        //
+        //
+        // let tileBeingCaptured;
+
+        // console.log('requested pos to string is: ');
+        // console.log(JSON.stringify(requestedPos));
+        // console.log('VS');
+
+
+        // switch (JSON.stringify(requestedPos)) {//case: attack forward left
+        //     case JSON.stringify({
+        //         y : currentPos.y + attackForwardYVal,
+        //         x : currentPos.x + attackLeftXVal
+        //     }) :
+        //         if(!endingTile.isOccupied()){
+        //             tileBeingCaptured = this.boardState[currentPos.y + (attackForwardYVal / 2)][currentPos.x + (attackLeftXVal / 2)];
+        //
+        //             if(tileBeingCaptured.getCheckerTeam() === this.nextTurn){
+        //                 console.log('ATTACK UP(FORWARD) LEFT');
+        //
+        //                 tileBeingCaptured.removeChecker();
+        //                 return true;
+        //             }
+        //         }
+        //         break;
+        //
+        //
+        //     case JSON.stringify({//case: attack forward right
+        //         y : currentPos.y + attackForwardYVal,
+        //         x : currentPos.x + attackRightXVal
+        //     }) :
+        //
+        //         if(!endingTile.isOccupied()){
+        //             tileBeingCaptured = this.boardState[currentPos.y + (attackForwardYVal / 2)][currentPos.x + (attackRightXVal / 2)];
+        //
+        //             if(tileBeingCaptured.getCheckerTeam() === this.nextTurn){
+        //                 console.log('ATTACK UP(FORWARD) RIGHT');
+        //
+        //                 tileBeingCaptured.removeChecker();
+        //                 return true;
+        //             }
+        //         }
+        //         break;
+        //
+        //
+        //     case JSON.stringify({//case: attack backward right
+        //         y : currentPos.y + attackBackwardYVal,
+        //         x : currentPos.x + attackRightXVal
+        //     }) :
+        //
+        //         if (startingTile.getCheckerKing()){//if checker is king
+        //             if(!endingTile.isOccupied()){
+        //                 tileBeingCaptured = this.boardState[currentPos.y + (attackBackwardYVal / 2)][currentPos.x + (attackRightXVal / 2)];
+        //                 if(tileBeingCaptured.getCheckerTeam() === this.nextTurn){
+        //                     console.log('ATTACK DOWN(BACKWARD) RIGHT');
+        //
+        //                     tileBeingCaptured.removeChecker();
+        //                     return true;
+        //                 }
+        //             }
+        //         }
+        //         break;
+        //
+        //
+        //     case JSON.stringify({//case: attack backward left
+        //         y : currentPos.y + attackBackwardYVal,
+        //         x : currentPos.x + attackLeftXVal
+        //     }) :
+        //
+        //         if (startingTile.getCheckerKing()){//if checker is king
+        //             if(!endingTile.isOccupied()){
+        //                 tileBeingCaptured = this.boardState[currentPos.y + (attackBackwardYVal / 2)][currentPos.x + (attackLeftXVal / 2)];
+        //
+        //                 if(tileBeingCaptured.getCheckerTeam() === this.nextTurn){
+        //                     console.log('ATTACK DOWN(BACKWARD) LEFT');
+        //
+        //                     tileBeingCaptured.removeChecker();
+        //                     return true;
+        //                 }
+        //             }
+        //         }
+        //         break;
+        //
+        //
+        //     case JSON.stringify({//case: move forward left
+        //         y : currentPos.y + moveForwardYVal,
+        //         x : currentPos.x + moveLeftXVal
+        //     }) :
+        //
+        //         if(!endingTile.isOccupied()){
+        //             console.log('MOVE UP(FORWARD) LEFT');
+        //             return true;
+        //         }
+        //         break;
+        //
+        //
+        //     case JSON.stringify({//case: move forward right
+        //         y : currentPos.y + moveForwardYVal,
+        //         x : currentPos.x + moveRightXVal
+        //     }) :
+        //
+        //         if(!endingTile.isOccupied()){
+        //             console.log('MOVE UP(FORWARD) RIGHT');
+        //             return true;
+        //         }
+        //         break;
+        //
+        //
+        //     case JSON.stringify({//case: move backward left
+        //         y : currentPos.y + moveBackwardYVal,
+        //         x : currentPos.x + moveRightXVal
+        //     }) :
+        //
+        //         if (startingTile.getCheckerKing()){//if checker is king
+        //             if(!endingTile.isOccupied()){
+        //                 console.log('MOVE DOWN(BACKWARD) RIGHT');
+        //                 return true;
+        //             }
+        //         }
+        //         break;
+        //
+        //
+        //     case JSON.stringify({//case: move backward left
+        //         y : currentPos.y + moveBackwardYVal,
+        //         x : currentPos.x + moveLeftXVal
+        //     }) :
+        //         if (startingTile.getCheckerKing()){//if checker is king
+        //             if(!endingTile.isOccupied()){
+        //                 console.log('MOVE DOWN(BACKWARD) LEFT');
+        //                 return true;
+        //             }
+        //
+        //         }
+        //         break;
+        //
+        //
+        //     default:
+        //         console.log('MOVE INVALID');
+        //         return false;
+        // }
+
+    }
+
+    validateAttackingMove(currentPos, requestedPos, startingTile, endingTile){
+        let attackForwardYVal;
+        let attackBackwardYVal;
+        let attackLeftXVal;
+        let attackRightXVal;
+
+        if(startingTile.getCheckerTeam() === 'red'){
+            attackForwardYVal = 2;
+            attackBackwardYVal = -2;
+
+            attackLeftXVal = 2;
+            attackRightXVal = -2;
+
+        } else if(startingTile.getCheckerTeam() === 'blue'){
+            attackForwardYVal = -2;
+            attackBackwardYVal = 2;
+
+            attackLeftXVal = -2;
+            attackRightXVal = 2;
+        }
+
+        let tileBeingCaptured;
+
+        switch (JSON.stringify(requestedPos)) {//case: attack forward left
+            case JSON.stringify({
+                y: currentPos.y + attackForwardYVal,
+                x: currentPos.x + attackLeftXVal
+            }) :
+                if (!endingTile.isOccupied()) {
+                    tileBeingCaptured = this.boardState[currentPos.y + (attackForwardYVal / 2)][currentPos.x + (attackLeftXVal / 2)];
+
+                    if (tileBeingCaptured.getCheckerTeam() === this.nextTurn) {
+                        console.log('VALID ATTACK FORWARD LEFT');
+
+                        tileBeingCaptured.removeChecker();
+                        return true;
+                    }
+                }
+                break;
+
+
+            case JSON.stringify({//case: attack forward right
+                y: currentPos.y + attackForwardYVal,
+                x: currentPos.x + attackRightXVal
+            }) :
+
+                if (!endingTile.isOccupied()) {
+                    tileBeingCaptured = this.boardState[currentPos.y + (attackForwardYVal / 2)][currentPos.x + (attackRightXVal / 2)];
+
+                    if (tileBeingCaptured.getCheckerTeam() === this.nextTurn) {
+                        console.log('VALID ATTACK FORWARD RIGHT');
+
+                        tileBeingCaptured.removeChecker();
+                        return true;
+                    }
+                }
+                break;
+
+
+            case JSON.stringify({//case: attack backward right
+                y: currentPos.y + attackBackwardYVal,
+                x: currentPos.x + attackRightXVal
+            }) :
+
+                if (startingTile.getCheckerKing()) {//if checker is king
+                    if (!endingTile.isOccupied()) {
+                        tileBeingCaptured = this.boardState[currentPos.y + (attackBackwardYVal / 2)][currentPos.x + (attackRightXVal / 2)];
+                        if (tileBeingCaptured.getCheckerTeam() === this.nextTurn) {
+                            console.log('VALID ATTACK BACKWARD RIGHT');
+
+                            tileBeingCaptured.removeChecker();
+                            return true;
+                        }
+                    }
+                }
+                break;
+
+
+            case JSON.stringify({//case: attack backward left
+                y: currentPos.y + attackBackwardYVal,
+                x: currentPos.x + attackLeftXVal
+            }) :
+
+                if (startingTile.getCheckerKing()) {//if checker is king
+                    if (!endingTile.isOccupied()) {
+                        tileBeingCaptured = this.boardState[currentPos.y + (attackBackwardYVal / 2)][currentPos.x + (attackLeftXVal / 2)];
+
+                        if (tileBeingCaptured.getCheckerTeam() === this.nextTurn) {
+                            console.log('VALID ATTACK BACKWARD LEFT');
+
+                            tileBeingCaptured.removeChecker();
+                            return true;
+                        }
+                    }
+                }
+                break;
+
+            default:
+                console.log('PROPOSED ATTACKING MOVE INVALID');
+                return false;
+        }
+    }
+
+    validateTravelingMove(currentPos, requestedPos, startingTile, endingTile){
+        let moveForwardYVal;
+        let moveBackwardYVal;
+        let moveLeftXVal;
+        let moveRightXVal;
+
+        if(startingTile.getCheckerTeam() === 'red'){
+            moveForwardYVal = 1;
+            moveBackwardYVal = -1;
+
+            moveLeftXVal = 1;
+            moveRightXVal = -1;
+
+        } else if(startingTile.getCheckerTeam() === 'blue'){
+            moveForwardYVal = -1;
+            moveBackwardYVal = 1;
+
+            moveLeftXVal = -1;
+            moveRightXVal = 1;
+        }
+
+        switch (JSON.stringify(requestedPos)) {
+            case JSON.stringify({//case: move forward left
+                y : currentPos.y + moveForwardYVal,
+                x : currentPos.x + moveLeftXVal
+            }) :
+
+                if(!endingTile.isOccupied()){
+                    console.log('VALID MOVE FORWARD LEFT');
+                    return true;
+                }
+                break;
+
+
+            case JSON.stringify({//case: move forward right
+                y : currentPos.y + moveForwardYVal,
+                x : currentPos.x + moveRightXVal
+            }) :
+
+                if(!endingTile.isOccupied()){
+                    console.log('VALID MOVE FORWARD RIGHT');
+                    return true;
+                }
+                break;
+
+
+            case JSON.stringify({//case: move backward left
+                y : currentPos.y + moveBackwardYVal,
+                x : currentPos.x + moveRightXVal
+            }) :
+
+                if (startingTile.getCheckerKing()){//if checker is king
+                    if(!endingTile.isOccupied()){
+                        console.log('VALID MOVE BACKWARD RIGHT');
+                        return true;
+                    }
+                }
+                break;
+
+
+            case JSON.stringify({//case: move backward left
+                y : currentPos.y + moveBackwardYVal,
+                x : currentPos.x + moveLeftXVal
+            }) :
+                if (startingTile.getCheckerKing()){//if checker is king
+                    if(!endingTile.isOccupied()){
+                        console.log('VALID MOVE BACKWARD LEFT');
+                        return true;
+                    }
+
+                }
+                break;
+
+
+            default:
+                console.log('TRAVELING MOVE INVALID');
+                return false;
+        }
+    }
+
+    canMakeValidAttackingMove(){
+        //
     }
 
     updateActiveGames(){
@@ -410,8 +549,12 @@ class ActiveGame{
     switchCurrentTurn(){
         if(this.currentTurn === 'red'){
             this.currentTurn = 'blue';
+            this.nextTurn = 'red';
+
         } else if(this.currentTurn === 'blue'){
-            this.currentTurn = 'red'
+            this.currentTurn = 'red';
+            this.nextTurn = 'blue';
+
         } else {
             console.log('something has gone wrong with turn switching...');
         }
