@@ -36,6 +36,7 @@ class Tile{
     //FUNCTIONS
     getBoardTileAsHTML(){
         return '<div class="boardTile ' + this.colour + ' ' + this.hasChecker() +'" id="' + this.CoodinateID + '">' +
+            this.CoodinateID +
             this.getCheckerAsHTML() +
             '</div>';
     }

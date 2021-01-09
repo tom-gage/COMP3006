@@ -1,3 +1,7 @@
+div.dot{
+    display: block;
+}
+
 .boardTile {
     display: inline-block;
     width: 75px;
@@ -16,7 +20,7 @@
 }
 
 .boardTile.black{
-    background-color: black;
+    background-color: cadetblue;
 }
 
 .dot {

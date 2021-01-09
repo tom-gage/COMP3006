@@ -66,29 +66,51 @@ class ActiveGame{
         //place checker at requested location
         if(this.validateGameConditions(currentPos, requestedPos, startingTile, currentPlayerID)){
             if(this.makingAMultiCapturePlay){//if making a multi capture play
-                if(startingTile.getCheckerID() === this.checkerInPlay.getCheckerID()){//if checker is same checker used in previous play
+                console.log('attempting multi-capture play...');
+
+                console.log('checker in play: ' + JSON.stringify(this.checkerInPlay));
+
+                console.log('starting tile ID: ' + startingTile.getCheckerID() + ' VS ' + 'checker in play ID: ' + this.checkerInPlay.id);
+
+                if(startingTile.getCheckerID() === this.checkerInPlay.id){//if checker is same checker used in previous play
+
                     if(this.validateAttackingMove(currentPos, requestedPos, startingTile, endingTile)){//if proposed move is a valid attacking play
                         //do move
+                        this.doAttackingMove(currentPos, requestedPos, startingTile, endingTile);
+
+                        console.log('LOOK FOR ANOTHER MULTI ATTACK PLAY...');
+                        if(this.canMakeValidAttackingMove(requestedPos, endingTile)){
+                            console.log('MULTI ATTACK PLAY AVAILABLE!!');
+
+                            // this.switchCurrentTurn();//bit confusing, nullifies team switch
+                            this.checkerInPlay = endingTile.checker;
+                            this.makingAMultiCapturePlay = true;
+                        } else {
+                            this.checkerInPlay = null;
+                            this.makingAMultiCapturePlay = false;
+                        }
                     }
                 }
-            }
-
-            if(this.validateTravelingMove(currentPos, requestedPos, startingTile, endingTile)){
+            } else if(this.validateTravelingMove(currentPos, requestedPos, startingTile, endingTile)){//if making a travelling move
                 //do travel
                 this.doTravelingMove(startingTile, endingTile);
 
 
-            } else if(this.validateAttackingMove(currentPos, requestedPos, startingTile, endingTile)){
+            } else if(this.validateAttackingMove(currentPos, requestedPos, startingTile, endingTile)){//if making an attacking move
                 //do attack + check for additional attack avenues for multi-capture plays
                 this.doAttackingMove(currentPos, requestedPos, startingTile, endingTile);
 
-                //if checker can take additional pieces
-                    //dont switch turns
-                    //checkerInPlay = startingTile
-                    //making a multiCapturePlay = true
-
+                console.log('LOOKING FOR MULTI ATTACK PLAY...');
                 if(this.canMakeValidAttackingMove(requestedPos, endingTile)){
-                    console.log('valid attacking move detected!');
+                    console.log('MULTI ATTACK PLAY AVAILABLE!!');
+
+                    // this.switchCurrentTurn();//bit confusing
+                    this.checkerInPlay = endingTile.checker;
+                    console.log('initialising checker in play: ' + JSON.stringify(this.checkerInPlay));
+                    this.makingAMultiCapturePlay = true;
+                } else {
+                    this.checkerInPlay = null;
+                    this.makingAMultiCapturePlay = false;
                 }
             }
 
@@ -337,29 +359,40 @@ class ActiveGame{
     }
 
     canMakeValidAttackingMove(currentPosition, currentTile){
-        console.log('Checking for valid attacking moves...');
+        console.log('Checking for valid attacking moves... ');
         let yArray = [-2, -2, 2 ,2];
         let xArray = [-2, 2, 2, -2];
         
         for(let n = 0; n <= 3; n++){
+
             let potentiallyAttackablePosition = {
                 y : currentPosition.y + yArray[n],
                 x : currentPosition.x + xArray[n]
             };
 
-            let potentiallyAttackableTile = this.boardState[potentiallyAttackablePosition.y][potentiallyAttackablePosition.x];
 
-            console.log('checking position, y:' + potentiallyAttackablePosition.y + ', x: ' + potentiallyAttackablePosition.x)
-            if(this.validateAttackingMove(currentPosition, potentiallyAttackablePosition, currentTile, potentiallyAttackableTile)){
-                console.log('valid attacking move found!');
-                return true;
+
+            if(potentiallyAttackablePosition.y >= 0 && potentiallyAttackablePosition.y <= 7){
+                if(potentiallyAttackablePosition.x >= 0 && potentiallyAttackablePosition.x <= 7){
+
+                    let potentiallyAttackableTile = this.boardState[potentiallyAttackablePosition.y][potentiallyAttackablePosition.x];
+                    console.log('checking position, y:' + potentiallyAttackablePosition.y + ', x: ' + potentiallyAttackablePosition.x);
+
+                    if(this.validateAttackingMove(currentPosition, potentiallyAttackablePosition, currentTile, potentiallyAttackableTile)){
+                        // console.log('valid attacking move found!');
+                        return true;
+                    }
+                }
             }
+
+
         }
         console.log('NO valid attacking moves found');
         return false;
     }
 
     doTravelingMove(startingTile, endingTile){
+        console.log('Doing travelling move...');
         endingTile.placeChecker(startingTile.checker);
         startingTile.removeChecker();
     }
@@ -368,12 +401,10 @@ class ActiveGame{
         endingTile.placeChecker(startingTile.checker);
         startingTile.removeChecker();
         this.boardState[Math.abs(currentPos.y - (currentPos.y - requestedPos.y) / 2)][Math.abs(currentPos.x - (currentPos.x - requestedPos.x) / 2)].removeChecker();
-
-        console.log('attempting to remove tile at...');
-        // console.log('y: ' + currentPos.y - (((currentPos.y - requestedPos.y) / 2) * -1));
-        // console.log('x: ' + currentPos.x - (((currentPos.x - requestedPos.x) / 2) * -1));
-        console.log('y: ' + Math.abs(currentPos.y - (currentPos.y - requestedPos.y) / 2));
-        console.log('x: ' + Math.abs(currentPos.x - (currentPos.x - requestedPos.x) / 2));
+        console.log('Doing attacking move...');
+        // console.log('attempting to remove tile at...');
+        // console.log('y: ' + Math.abs(currentPos.y - (currentPos.y - requestedPos.y) / 2));
+        // console.log('x: ' + Math.abs(currentPos.x - (currentPos.x - requestedPos.x) / 2));
     }
 
     updateActiveGames(){
@@ -414,16 +445,18 @@ class ActiveGame{
     }
 
     switchCurrentTurn(){
-        if(this.currentTurn === 'red'){
-            this.currentTurn = 'blue';
-            this.nextTurn = 'red';
+        if(!this.makingAMultiCapturePlay){
+            if(this.currentTurn === 'red'){
+                this.currentTurn = 'blue';
+                this.nextTurn = 'red';
 
-        } else if(this.currentTurn === 'blue'){
-            this.currentTurn = 'red';
-            this.nextTurn = 'blue';
+            } else if(this.currentTurn === 'blue'){
+                this.currentTurn = 'red';
+                this.nextTurn = 'blue';
 
-        } else {
-            console.log('something has gone wrong with turn switching...');
+            } else {
+                console.log('something has gone wrong with turn switching...');
+            }
         }
     }
 
