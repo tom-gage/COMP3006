@@ -42,6 +42,13 @@
 
         })
 
+        socket.on('updateTurnDisplay', function (msg) {
+            console.log('turn update received');
+            $('#turnDisplay').html(msg);
+
+        })
+
+
         $(document).ready(function(){
             $(document).on('click', '.boardTile', function (event) {//deviation from usual syntax to allow for dynamic elements
                 // console.log('tile clicked!');
@@ -94,6 +101,8 @@
 <br>
 
 <p id="debugTrigger">debug trigger here!</p>
+<p id="turnDisplay">turn display here!</p>
+
 <p id="gameMessage"></p>
 <div id="board">
 

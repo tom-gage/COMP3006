@@ -88,13 +88,6 @@ io.on("connection", async function(socket) {
         let targetGame = findActiveGame(move.gameCode);
 
         if(targetGame){
-
-
-            //TEST STUFF, REMOVE
-            // targetGame.boardState[0].forEach(function (tile,  index) {
-            //    tile.removeChecker();
-            // });
-
             targetGame.makeMove(move.currentPos, move.requestedPos, move.playerID);
 
             //check for win/loss condition
@@ -111,6 +104,9 @@ io.on("connection", async function(socket) {
 
             io.to(targetGame.player1SocketID).emit('updateBoard', targetGame.getBoardStateAsHTML());
             io.to(targetGame.player2SocketID).emit('updateBoard', targetGame.getBoardStateAsHTML());
+
+            io.to(targetGame.player1SocketID).emit('updateTurnDisplay', targetGame.getCurrentTurnAsHTML());
+            io.to(targetGame.player2SocketID).emit('updateTurnDisplay', targetGame.getCurrentTurnAsHTML());
         }
     })
 });
