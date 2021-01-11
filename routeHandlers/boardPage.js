@@ -18,7 +18,7 @@ router.get('/', function (req, res) {
             player2ID : game.player2ID,
             thisPlayerID : playerInQuestion
         })
-    } else{//else, game not found
+    } else {//else, game not found
         res.send('game not found >.<');
     }
 });

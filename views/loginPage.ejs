@@ -1,0 +1,38 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test page for testing things</title>
+    <link rel="stylesheet" href="CSS/stylesheet.css">
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!--
+    I know this is just a test page but we should really be putting our
+    js in a separate file. Shame on us.
+    -->
+
+</head>
+
+<body>
+<h1>Login Page</h1>
+<form action="loginPage.ejs" method="post">
+    <p>Login:</p>
+    <input type="hidden" name="requestedAction" value="login">
+
+    <input type="text" id="username" name="username" value="testUserName">
+    <input type="text" id="password" name="password" value="password">
+    <input type="submit" value="Login">
+</form>
+
+<form action="loginPage.ejs" method="post">
+    <p>Register:</p>
+    <input type="hidden" name="requestedAction" value="register">
+
+    <input type="text" id="username" name="username" value="testUserName">
+    <input type="text" id="password" name="password" value="password">
+    <input type="submit" value="register">
+</form>
+
+</body>
+</html>

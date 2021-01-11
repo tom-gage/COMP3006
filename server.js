@@ -10,15 +10,51 @@ let bodyParser = require('body-parser');
 let session = require('express-session');
 let socketIo = require('socket.io');
 let path = require('path');
+let mongoose = require('mongoose');
 
 let express = require("express");
 let app = express();
 
+// //setup database connection
+const dbUrl = "mongodb+srv://barnaby:admin@cluster0.3qn4a.mongodb.net/myDatabase?retryWrites=true&w=majority";
+mongoose.connect(dbUrl, {useUnifiedTopology: true, useNewUrlParser: true}).then(function () {
+    console.log('connected to db successfully');
+});
+
+let userSchema = mongoose.Schema({
+    username:String,
+    password:String,
+    wins:String,
+    losses:String
+});
+
+let User = mongoose.model('Users', userSchema);
+
+// User.create({
+//     username : 'barnaby',
+//     password : 'bleh',
+//     wins : '10',
+//     losses : '10'
+// }, function (err) {
+//     if (err) return console.log(err);
+// });
+
 //vars
 global.ACTIVE_GAMES = [];
+User.find({}, function (err, users) {
+    console.log('found...');
+    console.log(users);
+    global.USERS = users;
+});
 
+
+
+
+// console.log('USERS contains: ' + USERS);
+// console.log('USERS[0]: ' + USERS[0].username);
 //setup app
 app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(session({
     secret : 'sessionSecret',
     resave : false,
@@ -140,6 +176,11 @@ function updateActiveGame(updateGame){
 
 
 //routes
+
+//login
+let loginRoute = require('./routeHandlers/loginPage.js');
+app.use('/loginPage.ejs', loginRoute);
+
 //main menu
 let mainMenuRoute = require('./routeHandlers/mainMenuPage');
 app.use('/mainMenuPage.ejs', mainMenuRoute);
@@ -168,17 +209,7 @@ server.listen(9000, function (request, response) {
 
 
 
-// //setup database connection
-// const dbUrl = "mongodb+srv://barnaby:admin@cluster0.3qn4a.mongodb.net/myDatabase?retryWrites=true&w=majority";
-// mongoose.connect(dbUrl, {useUnifiedTopology: true, useNewUrlParser: true}).then(function () {
-//     console.log('connected to db successfully');
-// });
-//
-// let personSchema = mongoose.Schema({
-//     name:String,
-//     occupation:String
-// });
-// let Person = mongoose.model('Person', personSchema);
+
 //
 //
 //

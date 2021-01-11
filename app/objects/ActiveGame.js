@@ -54,9 +54,6 @@ class ActiveGame{
     }
 
     makeMove(currentPos, requestedPos, currentPlayerID){
-        // this.prettyPrintBoardState();
-        // this.makeKings();//make kings first, otherwise multi-capture play validation cannot take a checkers king-ness into account
-
         currentPos = this.parsePosition(currentPos);
         requestedPos = this.parsePosition(requestedPos);
 
@@ -67,14 +64,12 @@ class ActiveGame{
         if(this.validateGameConditions(currentPos, requestedPos, startingTile, currentPlayerID)){//if game conditions are valid
             if(this.makingAMultiCapturePlay){//if making a multi capture play
                 console.log('attempting multi-capture play...');
-                // console.log('starting tile ID: ' + startingTile.getCheckerID() + ' VS ' + 'checker in play ID: ' + this.checkerInPlay.id);
-
                 if(startingTile.getCheckerID() === this.checkerInPlay.id){//if checker is same checker used in previous play
 
                     if(this.validateAttackingMove(currentPos, requestedPos, startingTile, endingTile)){//if proposed move is a valid attacking play
                         this.doAttackingMove(currentPos, requestedPos, startingTile, endingTile);//do move
                         this.makeKings();
-                        
+
                         console.log('SUCCESS!');
                         console.log('LOOKING FOR ANOTHER MULTI CAPTURE PLAY...');
                         if(this.canMakeValidAttackingMove(requestedPos, endingTile)){
@@ -117,9 +112,6 @@ class ActiveGame{
             this.determineGameover();
             this.updateActiveGames();
         }
-
-
-
         this.prettyPrintBoardState();
     }
 

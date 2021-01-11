@@ -8,10 +8,10 @@ router.get('/', function (req, res) {
         req.session.username = '';
     }
 
-    req.session.page_views++;
+    req.session.viewCount += 1;
+    console.log("cookies: " + req.session.viewCount);
 
     res.render('mainMenuPage.ejs', {
-        pageviews : req.session.page_views
     });
 });
 
