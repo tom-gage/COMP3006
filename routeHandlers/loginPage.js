@@ -1,8 +1,9 @@
 let express = require('express');
 let session = require('express-session');
-let DB = require("C:/Users/Tom/Documents/COMP3006/app/utilityClasses/DB.js");//THIS IS FUCKING WRONG IS IT NOT
+let DB = require("../app/utilityClasses/DB.js");//THIS IS FUCKING WRONG IS IT NOT
 
 let router = express.Router();
+
 
 //GET
 router.get('/', function (req, res) {
@@ -13,54 +14,77 @@ router.get('/', function (req, res) {
 });
 
 //POST
-router.post('/', function (req, res) {
+router.post('/', async function (req, res) {
     console.log('login page request of type...');
+    let requestedAction = req.body.requestedAction;
 
-    if(req.body.requestedAction === 'login'){
+    if(requestedAction === 'login'){
         console.log('login');
+        handleLogin(req, res);
 
-        if(USERS.find(function (user) {//if input matches existing username and pw
-            return (user.username === req.body.username && user.password === req.body.password);
-        })){
-            console.log('login success');
-            req.session.userID = req.body.username;//set username to be session id
-            res.redirect('mainMenuPage.ejs');
-        } else {
-            console.log('login failure');
-            res.redirect('loginPage.ejs');//no login
-        }
-
-    } else if(req.body.requestedAction === 'register'){
+    } else if(requestedAction === 'register'){
         console.log('register');
-
-        if(USERS.find(function (user) {
-            return user.username === req.body.username;
-        })){
-            console.log('registration failure');
-            res.redirect('loginPage.ejs');//no login
-        } else {
-            console.log('registration success');
-            let newUser = {
-                username : req.body.username,
-                password : req.body.password,
-                wins : 0,
-                losses : 0
-            };
-
-            let UsersModel = DB.getUserModel();
-
-            UsersModel.create(newUser, function (err) {
-                if (err) return console.log(err);
-            });
-
-            USERS.push(newUser);
-
-            req.session.userID = req.body.username;//set session to be username
-            res.redirect('mainMenuPage.ejs');
-        }
-
+        handleRegistration(req, res);
     }
 });
 
+function handleLogin(req, res){
+    let username = req.body.username;
+    let password = req.body.password;
+
+    if(USERS.find(function (user) {//if input matches existing username and pw
+        return (user.username === username && user.password === password);
+    })) {
+        login(req, res);
+    } else {
+        console.log('login failure');
+        res.redirect('loginPage.ejs');//no login
+    }
+}
+
+function userIsLoggedIn(username) {
+    if(ACTIVE_USERS.find(function (user) {//if input matches existing username and pw
+        return (user.username === username);
+    })){
+        return true;
+    }
+}
+
+function handleRegistration(req, res){
+    let username = req.body.username;
+    let password = req.body.password;
+
+    if(USERS.find(function (user) {//if username is taken
+        return user.username === username;
+    })){
+        console.log('registration failure');
+        res.redirect('loginPage.ejs');//no login
+    } else {
+        console.log('registration success');
+        let newUser = {
+            username : username,
+            password : password,
+            wins : 0,
+            losses : 0
+        };
+
+        let UsersModel = DB.getUserModel();
+
+        UsersModel.create(newUser, function (err) {
+            if (err) return console.log(err);
+        });
+
+        USERS.push(newUser);
+        login(req, res);
+    }
+}
+
+
+function login(req, res) {
+    console.log('login success');
+    req.session.userID = req.body.username;//set username to be session id
+    ACTIVE_USERS.push({username : req.body.username});
+    res.redirect('mainMenuPage.ejs');
+}
 
 module.exports = router;

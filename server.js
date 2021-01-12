@@ -25,14 +25,10 @@ let User = DB.getUserModel();
 User.find({}, function (err, users) {
     global.USERS = users;
 });
+
 global.ACTIVE_USERS = [];
 global.ACTIVE_GAMES = [];
 
-
-
-
-// console.log('USERS contains: ' + USERS);
-// console.log('USERS[0]: ' + USERS[0].username);
 //setup app
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -49,107 +45,102 @@ app.set('view engine', 'ejs');
 //setup server
 let server = http.createServer(app);
 
-
-
 //setup sockets
 let io = socketIo(server);
 
 io.on("connection", async function(socket) {
-
     //on connection
     console.log("Websocket connection established...");
 
-    //TESTING STUFF
-    let testActiveGame = new ActiveGame(123, 111, 222);
+    //on join request
+    socket.on('joinRequest', async function(msg) {
+        console.log('client join request received, id is: ' + msg);
 
-    testActiveGame.initialiseBoardState();
-
-    let testBoardHTML = testActiveGame.getBoardStateAsHTML();
-
-    // console.log('sending Board Update');
-    // socket.emit('updateBoard', testBoardHTML);
-
-    socket.on('joiningHandshake', async function(msg) {
-        console.log('client joining handshake received, id is: ' + msg);
-
-        let handshake = JSON.parse(msg);
-
-        let targetGame = findActiveGame(handshake.gameCode);
-
-        console.log('handshake player id: ' + handshake.playerID);
-        console.log('target game player1 id: ' + targetGame.player1ID);
-        console.log('target game player2 id: ' + targetGame.player1ID);
-
-        if(handshake.playerID === targetGame.player1ID){
-            targetGame.player1SocketID = handshake.socketID;
-        } else if(handshake.playerID === targetGame.player2ID){
-            targetGame.player2SocketID = handshake.socketID;
-        }
-
-        updateActiveGame(targetGame);
-
-        console.log('sending initial board update...');
-        socket.emit('updateBoard', targetGame.getBoardStateAsHTML());
+        handleJoinRequest(JSON.parse(msg));
     });
 
-    socket.on('debug', async function (msg) {
-        console.log('DEBUG!');
-    });
-
+    //on move request
     socket.on('moveRequest', async function (msg) {
         console.log('move request received: ');
         console.log(msg);
 
-        let move = JSON.parse(msg);
+        let moveRequest = JSON.parse(msg);
 
-        let targetGame = findActiveGame(move.gameCode);
-
-        if(targetGame){
-            targetGame.makeMove(move.currentPos, move.requestedPos, move.playerID);
-
-            //check for win/loss condition
-            if(targetGame.gameOver){
-                console.log(targetGame.winningTeam + ' team won!');
-                io.to(targetGame.player1SocketID).emit('updateGameMessage', targetGame.winningTeam + ' team won!');
-                io.to(targetGame.player2SocketID).emit('updateGameMessage', targetGame.winningTeam + ' team won!');
-            }
-
-
-            console.log('sending board update...');
-            console.log('sending to (player1): ' + targetGame.player1SocketID);
-            console.log('sending to (player2): ' + targetGame.player2SocketID);
-
-            io.to(targetGame.player1SocketID).emit('updateBoard', targetGame.getBoardStateAsHTML());
-            io.to(targetGame.player2SocketID).emit('updateBoard', targetGame.getBoardStateAsHTML());
-
-            io.to(targetGame.player1SocketID).emit('updateTurnDisplay', targetGame.getCurrentTurnAsHTML());
-            io.to(targetGame.player2SocketID).emit('updateTurnDisplay', targetGame.getCurrentTurnAsHTML());
-
-            if(targetGame.gameOver){
-                if(targetGame.winningTeam === 'Red'){
-                    await updatePlayerWins(targetGame.player1ID, targetGame.player2ID);
-
-                    // USERS.push(newUser);
-                } else if(targetGame.winningTeam === 'Blue'){
-                    await updatePlayerWins(targetGame.player2ID, targetGame.player1ID);
-                }
-
-
-            }
-        }
+        await handleMoveRequest(moveRequest);
     })
+
+    socket.on('disconnect', function() {
+        console.log('Got disconnect!');
+
+    });
 });
 
 //functions
-function findActiveGame(gameCode){
-    let targetGame;
-    // console.log('finding active game...');
-    ACTIVE_GAMES.forEach(function (activeGame, index) {//for each game in ACTIVE_GAMES
-        // console.log('Active Game Search: ' + activeGame.code.toString() + ' VS ' + gameCode.toString());
-        if(activeGame.code.toString() === gameCode.toString()){//if there's an active game with a code matching the submitted code
-            targetGame = activeGame;
-            // console.log('game found! game code is: ' + targetGame.code);
+async function handleMoveRequest(moveRequest){
+    let targetGame = findActiveGame(moveRequest.gameCode);
+
+    if(targetGame){
+        targetGame.makeMove(moveRequest.currentPos, moveRequest.requestedPos, moveRequest.playerID);
+
+        sendEventToPlayers(targetGame,'updateBoard', targetGame.getBoardStateAsHTML());
+        sendEventToPlayers(targetGame,'updateTurnDisplay', targetGame.getCurrentTurnAsHTML());
+
+        console.log('sending board update...');
+        console.log('sending to (player1): ' + targetGame.player1SocketID);
+        console.log('sending to (player2): ' + targetGame.player2SocketID);
+
+        //check for win/loss condition
+        if(targetGame.gameOver){
+            console.log(targetGame.winningTeam + ' team won!');
+
+            if(targetGame.winningTeam === 'Red'){
+                await updatePlayerWins(targetGame.player1ID, targetGame.player2ID);
+            } else if(targetGame.winningTeam === 'Blue'){
+                await updatePlayerWins(targetGame.player2ID, targetGame.player1ID);
+            }
+
+            sendEventToPlayers(targetGame,'updateGameMessage', targetGame.winningTeam + ' team won!');
+
+            updateActiveGame(targetGame, 'delete');
         }
+    }
+}
+
+function sendEventToPlayers(targetGame, event, msg){
+    io.to(targetGame.player1SocketID).emit(event, msg);
+    io.to(targetGame.player2SocketID).emit(event, msg);
+}
+
+
+function handleJoinRequest(joinRequest) {
+    let targetGame = findActiveGame(joinRequest.gameCode);
+
+    console.log('joining player id: ' + joinRequest.playerID);
+    console.log('target game player1 id: ' + targetGame.player1ID);
+    console.log('target game player2 id: ' + targetGame.player2ID);
+
+    if(targetGame){
+        if(joinRequest.playerID === targetGame.player1ID){
+            targetGame.player1SocketID = joinRequest.socketID;
+
+        } else if(joinRequest.playerID === targetGame.player2ID){
+            targetGame.player2SocketID = joinRequest.socketID;
+        }
+
+        updateActiveGame(targetGame);
+        console.log('sending initial board update...');
+        // io.emit('updateBoard', targetGame.getBoardStateAsHTML());//THIS SENDS BOARD UPDATE TO ALL USERS, NEEDS FIXING STAT
+
+        sendEventToPlayers(targetGame, 'updateBoard', targetGame.getBoardStateAsHTML());
+    }
+}
+
+
+function findActiveGame(gameCode){
+    let targetGame = null;
+    // console.log('finding active game...');
+    targetGame = ACTIVE_GAMES.find(function (ActiveGame, index) {
+        return ActiveGame.code.toString() === gameCode.toString();
     });
 
     return targetGame;
@@ -157,21 +148,22 @@ function findActiveGame(gameCode){
 
 
 
-//socket message send handler NEEDED?
-
-function updateActiveGame(updateGame){
+function updateActiveGame(updateGame, action){
     // console.log('updating ACTIVE_GAMES...');
     ACTIVE_GAMES.forEach(function (activeGame, index) {//for each game in ACTIVE_GAMES
         if(activeGame.code.toString() === updateGame.code.toString()){//if there's an active game with a code matching the submitted code
             ACTIVE_GAMES.splice(index, 1, updateGame);//at current index: delete game, replace with updated game
             // console.log('active game updated! game code is: ' + updateGame.code);
+            if(action === 'delete'){
+                ACTIVE_GAMES.splice(index, 1);
+            }
         }
     });
 }
 
 
 async function updatePlayerWins(winningPlayer, losingPlayer){
-    console.log('a team won, updating database...');
+    console.log('a player won, updating database...');
     console.log('adding win:' + winningPlayer);
     console.log('adding loss:' + losingPlayer);
 

@@ -45,7 +45,9 @@ router.post('/', function (req, res) {
 
 
 function createNewActiveGame(req, res){
-    let gameCode = Math.floor((Math.random() * 1000) + 1).toString();
+    // let gameCode = Math.floor((Math.random() * 1000) + 1).toString();
+    let gameCode = 'G_' + Math.random().toString(36).substr(2, 9);
+
     let player1ID = req.session.userID;
 
     let newGame = new ActiveGame(gameCode, player1ID, 'Not here yet');

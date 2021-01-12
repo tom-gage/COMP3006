@@ -60,6 +60,7 @@ class ActiveGame{
 
         //begin move validation
         if(this.validateGameConditions(currentPos, requestedPos, startingTile, currentPlayerID)){//if game conditions are valid
+
             if(this.makingAMultiCapturePlay){//if making a multi capture play
                 console.log('attempting multi-capture play...');
                 if(startingTile.getCheckerID() === this.checkerInPlay.id){//if checker is same checker used in previous play
@@ -78,6 +79,7 @@ class ActiveGame{
                         } else {
                             this.checkerInPlay = null;
                             this.makingAMultiCapturePlay = false;
+                            this.switchCurrentTurn();
                         }
                     }
                 }
@@ -85,6 +87,7 @@ class ActiveGame{
             } else if(this.validateTravelingMove(currentPos, requestedPos, startingTile, endingTile)){//if making a travelling move
                 //do travel
                 this.doTravelingMove(startingTile, endingTile);
+                this.switchCurrentTurn();
 
             } else if(this.validateAttackingMove(currentPos, requestedPos, startingTile, endingTile)){//if making an attacking move
                 //do attack + check for additional attack avenues for multi-capture plays
@@ -102,11 +105,11 @@ class ActiveGame{
                 } else {
                     this.checkerInPlay = null;
                     this.makingAMultiCapturePlay = false;
+                    this.switchCurrentTurn();
                 }
             }
 
             this.makeKings();
-            this.switchCurrentTurn();
             this.determineGameover();
             this.updateActiveGames();
         }
@@ -331,7 +334,7 @@ class ActiveGame{
             };
 
             if(potentiallyAttackablePosition.y >= 0 && potentiallyAttackablePosition.y <= 7){
-                if(potentiallyAttackablePosition.x >= 0 && potentiallyAttackablePosition.x <= 7){//if its within the bounds of the board
+                if(potentiallyAttackablePosition.x >= 0 && potentiallyAttackablePosition.x <= 7){//if tile is within within the bounds of the board
 
                     let potentiallyAttackableTile = this.boardState[potentiallyAttackablePosition.y][potentiallyAttackablePosition.x];
                     console.log('checking position, y:' + potentiallyAttackablePosition.y + ', x: ' + potentiallyAttackablePosition.x);
@@ -379,14 +382,14 @@ class ActiveGame{
 
         this.boardState[0].forEach(function (tile, index) {//for each tile on row 0
             if(tile.getCheckerTeam() === 'blue'){//if checker is blue, make checker king
-                console.log('made blue checker king');
+                console.log('made blue checker king at y: 0, x: ' + index );
                 tile.makeCheckerKing();
             }
         });
 
         this.boardState[this.boardState.length - 1].forEach(function (tile, index) {//for each tile on row 7
             if(tile.getCheckerTeam() === 'red'){//if checker is red, make checker king
-                console.log('made red checker king');
+                console.log('made red checker king at y: 7, x: ' + index);
                 tile.makeCheckerKing();
             }
         });
@@ -433,9 +436,7 @@ class ActiveGame{
             this.winningTeam = 'Red';
             return true;
         } else {
-            this.gameOver = true;//
-            this.winningTeam = 'Red';//
-            return true;//TESTING PURPOSES, should return false only
+            return false;
         }
     }
 

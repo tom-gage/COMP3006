@@ -2,7 +2,6 @@ class Checker{
     id;
     team;
     isKing = false;
-    isCaptured = false;
 
     constructor(id, team) {
         this.id = id;
@@ -20,10 +19,6 @@ class Checker{
 
     makeKing(){
         this.isKing = true;
-    }
-
-    makeCaptured(){
-        this.isCaptured = true;
     }
 }
 

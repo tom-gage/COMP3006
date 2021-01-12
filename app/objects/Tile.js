@@ -13,8 +13,6 @@ class Tile{
         this.checker = undefined;
     }
 
-
-
     //BUILDER FUNCTIONS
     addCoodinateID(y, x){
         this.CoodinateID = y + ',' + x;
@@ -32,10 +30,15 @@ class Tile{
     }
 
 
-
     //FUNCTIONS
+    //html render
     getBoardTileAsHTML(){
-        return '<div class="boardTile ' + this.colour + ' ' + this.hasChecker() +'" id="' + this.CoodinateID + '">' +
+        let isOccupied = '';
+        if(this.isOccupied()){
+            isOccupied = 'occupied';
+        }
+
+        return '<div class="boardTile ' + this.colour + ' ' + isOccupied +'" id="' + this.CoodinateID + '">' +
             this.CoodinateID +
             this.getCheckerAsHTML() +
             '</div>';
@@ -49,26 +52,7 @@ class Tile{
         }
     }
 
-    hasChecker(){
-        if(this.checker){
-            return 'occupied';
-        } else {
-            return '';
-        }
-    }
-
-    removeChecker(){
-        this.checker = undefined;
-    }
-
-    placeChecker(checker){
-        this.checker = new this.Checker(checker.id, checker.team);
-        if(checker.isKing){
-            this.checker.makeKing();
-        }
-
-    }
-
+    //checker gets
     getCheckerID(){
         if(this.checker){
             return this.checker.id;
@@ -91,6 +75,21 @@ class Tile{
         } else{
             return false;
         }
+    }
+
+
+
+    //checker operations
+    removeChecker(){
+        this.checker = undefined;
+    }
+
+    placeChecker(checker){
+        this.checker = new this.Checker(checker.id, checker.team);
+        if(checker.isKing){
+            this.checker.makeKing();
+        }
+
     }
 
     makeCheckerKing(){

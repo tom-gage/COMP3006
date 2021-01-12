@@ -20,14 +20,14 @@
         socket.on('connect', function () {
             console.log('socket id is: ' + socket.id);
 
-            handshake = {
+            joinRequest = {
                 gameCode : gameCode,
                 playerID : playerID,
                 socketID : socket.id
             }
 
-            console.log('sending handshake...');
-            socket.emit('joiningHandshake', JSON.stringify(handshake));
+            console.log('sending join request...');
+            socket.emit('joinRequest', JSON.stringify(joinRequest));
 
         });
 
@@ -48,19 +48,9 @@
 
         })
 
-
         $(document).ready(function(){
             $(document).on('click', '.boardTile', function (event) {//deviation from usual syntax to allow for dynamic elements
-                // console.log('tile clicked!');
-                // console.log(this.classList);
-
                 prepareMove(this);
-            });
-
-            $(document).on('click', '#debugTrigger', function (event) {//deviation from usual syntax to allow for dynamic elements
-                console.log('debug trigger clicked!');
-
-                socket.emit('debug');
             });
         });
 

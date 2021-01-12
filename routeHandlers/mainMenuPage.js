@@ -1,10 +1,13 @@
 let express = require('express');
 let router = express.Router();
 
+//GET
 router.get('/', function (req, res) {
     //set user ID
     if(!req.session.userID){
-        req.session.userID = Math.floor((Math.random() * 1000) + 1).toString();//should be random ID
+        // req.session.userID = Math.floor((Math.random() * 1000) + 1).toString();//should be random ID
+        req.session.userID = 'U_' + Math.random().toString(36).substr(2, 9);
+
         req.session.username = '';
     }
 
@@ -16,6 +19,7 @@ router.get('/', function (req, res) {
     });
 });
 
+//POST
 router.post('/', function (req, res) {
     //set username
     req.session.username = req.body.username;
@@ -25,6 +29,7 @@ router.post('/', function (req, res) {
     });
 });
 
+//FUNCTIONS
 function getHighScoresList(){
     let HSList = sortUsersByWins(USERS);
 
