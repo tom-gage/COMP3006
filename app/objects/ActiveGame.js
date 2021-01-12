@@ -2,8 +2,8 @@ class ActiveGame{
     Tile = require('./Tile');
 
     //ws vars
-    player1SocketID;
-    player2SocketID;
+    player1SocketID = '';
+    player2SocketID = '';
 
     //game vars
     code;

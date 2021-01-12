@@ -67,10 +67,29 @@ io.on("connection", async function(socket) {
         let moveRequest = JSON.parse(msg);
 
         await handleMoveRequest(moveRequest);
-    })
+    });
 
     socket.on('disconnect', function() {
         console.log('Got disconnect!');
+
+        pruneActiveGames(findActiveGameByWSID(socket.id), socket.id);
+
+        //find active game by ws id
+        //remove player by id
+        //if game has no players, delete from active games
+        // let targetGame = findActiveGameByWSID(socket.id);
+        // if(targetGame){
+        //     if (targetGame.player1SocketID === socket.id){
+        //         targetGame.player1SocketID = '';
+        //     } else if(targetGame.player2SocketID === socket.id){
+        //         targetGame.player2SocketID = '';
+        //     }
+        //
+        //     if(targetGame.player1SocketID === '' && targetGame.player2SocketID === ''){
+        //         updateActiveGame(targetGame, 'delete');
+        //     }
+        // }
+
 
     });
 });
@@ -135,6 +154,31 @@ function handleJoinRequest(joinRequest) {
     }
 }
 
+function pruneActiveGames(targetGame, WSID) {
+    if(targetGame){//if target game exists
+        if (targetGame.player1SocketID === WSID){
+            targetGame.player1SocketID = '';
+        } else if(targetGame.player2SocketID === WSID){//if disconnecting websocket id matches a player's websocket id, prune it
+            targetGame.player2SocketID = '';
+        }
+
+        if(targetGame.player1SocketID === '' && targetGame.player2SocketID === ''){//if game has no players, delete it
+            updateActiveGame(targetGame, 'delete');
+        }
+    }
+}
+
+function findActiveGameByWSID(WSID) {
+    let targetGame = null;
+
+    targetGame = ACTIVE_GAMES.find(function (ActiveGame, index) {
+        return ActiveGame.player1SocketID.toString() === WSID.toString() || ActiveGame.player2SocketID.toString() === WSID.toString();
+    });
+
+    console.log('found game by WS: ' + targetGame);
+
+    return targetGame;
+}
 
 function findActiveGame(gameCode){
     let targetGame = null;
@@ -145,8 +189,6 @@ function findActiveGame(gameCode){
 
     return targetGame;
 }
-
-
 
 function updateActiveGame(updateGame, action){
     // console.log('updating ACTIVE_GAMES...');
