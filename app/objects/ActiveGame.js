@@ -1,8 +1,6 @@
 class ActiveGame{
     Tile = require('./Tile');
 
-
-
     //ws vars
     player1SocketID;
     player2SocketID;
@@ -357,10 +355,6 @@ class ActiveGame{
 
     doAttackingMove(currentPos, requestedPos, startingTile, endingTile){
         console.log('Doing attacking move...');
-        // console.log('attempting to remove tile at...');
-        // console.log('y: ' + Math.abs(currentPos.y - (currentPos.y - requestedPos.y) / 2));
-        // console.log('x: ' + Math.abs(currentPos.x - (currentPos.x - requestedPos.x) / 2));
-
         endingTile.placeChecker(startingTile.checker);//place checker
         startingTile.removeChecker();//then remove checker
         //then remove checker being captured
@@ -439,13 +433,11 @@ class ActiveGame{
             this.winningTeam = 'Red';
             return true;
         } else {
-            return false;
+            this.gameOver = true;//
+            this.winningTeam = 'Red';//
+            return true;//TESTING PURPOSES, should return false only
         }
     }
-
-
-
-
 
     initialiseBoardState(){
         let tileIndex = 1;
@@ -522,7 +514,7 @@ class ActiveGame{
 
         for(let y = 0; y < this.boardState.length; y++){//for each row
             rowOut += '[' + y + ']';
-            for(let x = 0; x < this.numberOfCols; x++){//for each column
+            for(let x = 0; x < this.numberOfCols; x++){//for each position in row
                 let tile = this.boardState[y][x];
 
                 if(!tile.checker){

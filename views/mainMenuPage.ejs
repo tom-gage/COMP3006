@@ -16,6 +16,8 @@
 <!--    <input type="submit" value="set username">-->
 <!--</form>-->
 
+<h1>Main Page</h1>
+
 <a href="loginPage.ejs">Login here</a>
 
 <br>
@@ -35,6 +37,14 @@
 </form>
 
 <br>
+
+<ol>
+    <li><%= highScoresList[0].username%> - <%= highScoresList[0].wins%></li>
+    <li><%= highScoresList[1].username%> - <%= highScoresList[1].wins%></li>
+    <li><%= highScoresList[2].username%> - <%= highScoresList[2].wins%></li>
+    <li><%= highScoresList[3].username%> - <%= highScoresList[3].wins%></li>
+    <li><%= highScoresList[4].username%> - <%= highScoresList[4].wins%></li>
+</ol>
 
 
 

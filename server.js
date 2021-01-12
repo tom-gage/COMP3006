@@ -10,42 +10,23 @@ let bodyParser = require('body-parser');
 let session = require('express-session');
 let socketIo = require('socket.io');
 let path = require('path');
+
 let mongoose = require('mongoose');
+let DB = require('./app/utilityClasses/DB');
 
 let express = require("express");
 let app = express();
 
 // //setup database connection
-const dbUrl = "mongodb+srv://barnaby:admin@cluster0.3qn4a.mongodb.net/myDatabase?retryWrites=true&w=majority";
-mongoose.connect(dbUrl, {useUnifiedTopology: true, useNewUrlParser: true}).then(function () {
-    console.log('connected to db successfully');
-});
-
-let userSchema = mongoose.Schema({
-    username:String,
-    password:String,
-    wins:String,
-    losses:String
-});
-
-let User = mongoose.model('Users', userSchema);
-
-// User.create({
-//     username : 'barnaby',
-//     password : 'bleh',
-//     wins : '10',
-//     losses : '10'
-// }, function (err) {
-//     if (err) return console.log(err);
-// });
+DB.initDBConnection();
+let User = DB.getUserModel();
 
 //vars
-global.ACTIVE_GAMES = [];
 User.find({}, function (err, users) {
-    console.log('found...');
-    console.log(users);
     global.USERS = users;
 });
+global.ACTIVE_USERS = [];
+global.ACTIVE_GAMES = [];
 
 
 
@@ -143,6 +124,18 @@ io.on("connection", async function(socket) {
 
             io.to(targetGame.player1SocketID).emit('updateTurnDisplay', targetGame.getCurrentTurnAsHTML());
             io.to(targetGame.player2SocketID).emit('updateTurnDisplay', targetGame.getCurrentTurnAsHTML());
+
+            if(targetGame.gameOver){
+                if(targetGame.winningTeam === 'Red'){
+                    await updatePlayerWins(targetGame.player1ID, targetGame.player2ID);
+
+                    // USERS.push(newUser);
+                } else if(targetGame.winningTeam === 'Blue'){
+                    await updatePlayerWins(targetGame.player2ID, targetGame.player1ID);
+                }
+
+
+            }
         }
     })
 });
@@ -162,6 +155,8 @@ function findActiveGame(gameCode){
     return targetGame;
 }
 
+
+
 //socket message send handler NEEDED?
 
 function updateActiveGame(updateGame){
@@ -174,6 +169,29 @@ function updateActiveGame(updateGame){
     });
 }
 
+
+async function updatePlayerWins(winningPlayer, losingPlayer){
+    console.log('a team won, updating database...');
+    console.log('adding win:' + winningPlayer);
+    console.log('adding loss:' + losingPlayer);
+
+    await User.update(
+        {
+            username : winningPlayer,
+        },
+        {
+            $inc : { wins : 1}
+        });
+
+    await User.update(
+        {
+            username : losingPlayer,
+        },
+        {
+            $inc : { losses : 1}
+        });
+
+}
 
 //routes
 

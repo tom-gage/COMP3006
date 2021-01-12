@@ -9,9 +9,10 @@ router.get('/', function (req, res) {
     }
 
     req.session.viewCount += 1;
-    console.log("cookies: " + req.session.viewCount);
+    // console.log("cookies: " + req.session.viewCount);
 
     res.render('mainMenuPage.ejs', {
+        highScoresList : getHighScoresList()
     });
 });
 
@@ -20,8 +21,42 @@ router.post('/', function (req, res) {
     req.session.username = req.body.username;
 
     res.render('mainMenuPage.ejs', {
-
+        highScoresList : getHighScoresList()
     });
 });
+
+function getHighScoresList(){
+    let HSList = sortUsersByWins(USERS);
+
+    for(let i = 0; i <= 5; i++){
+        if(!HSList[i]){
+            HSList[i] = {
+                username : '',
+                wins : '',
+                losses : ''
+            };
+        }
+    }
+
+    return HSList;
+}
+
+
+function sortUsersByWins(users){
+    let len = users.length;
+    for (let i = 0; i < len; i++) {//for each user
+        for (let j = 0; j <= len; j++) {
+
+            if(users[j+1]){
+                if (users[j].wins < users[j + 1].wins) {
+                    let tmp = users[j];
+                    users[j] = users[j + 1];
+                    users[j + 1] = tmp;
+                }
+            }
+        }
+    }
+    return users;
+}
 
 module.exports = router;
