@@ -11,7 +11,7 @@ class ActiveGame{
     player2ID;
 
     gameOver = false;
-    winningTeam = 'none';
+    winningTeam = '';
 
     //turn vars
     currentTurn = 'red';
@@ -23,24 +23,16 @@ class ActiveGame{
 
     //board vars
     numberOfCols = 8;
-    row7;
-    row6;
-    row5;
-    row4;
-    row3;
-    row2;
-    row1;
+    boardState;
     row0;
-    boardState = [
-        this.row7 = [],
-        this.row6 = [],
-        this.row5 = [],
-        this.row4 = [],
-        this.row3 = [],
-        this.row2 = [],
-        this.row1 = [],
-        this.row0 = []
-    ];
+    row1;
+    row2;
+    row3;
+    row4;
+    row5;
+    row6;
+    row7;
+
 
 
     constructor(code, player1ID, player2ID) {
@@ -111,7 +103,7 @@ class ActiveGame{
 
             this.makeKings();
             this.determineGameover();
-            this.updateActiveGames();
+            // this.updateActiveGames();
         }
         this.prettyPrintBoardState();
     }
@@ -364,15 +356,15 @@ class ActiveGame{
         this.boardState[Math.abs(currentPos.y - (currentPos.y - requestedPos.y) / 2)][Math.abs(currentPos.x - (currentPos.x - requestedPos.x) / 2)].removeChecker();
     }
 
-    updateActiveGames(){
-        let thisGame = this;
-        let gameCode = this.code;
+    updateActiveGames(){//i'd say this doesn't need to be here...
+        // let thisGame = this;
+        // let gameCode = this.code;
 
-        ACTIVE_GAMES.forEach(function (activeGame, index) {//for each game in ACTIVE_GAMES
-            if(activeGame.code.toString() === gameCode.toString()){//if there's an active game with a code matching this games code
-                ACTIVE_GAMES.splice(index, 1, thisGame);//at current index: delete game, replace with updated game
-            }
-        });
+        // let index = ACTIVE_GAMES.findIndex(function (activeGame) {
+        //     return activeGame.code.toString() === gameCode.toString();
+        // });
+
+        // ACTIVE_GAMES.splice(index, 1, thisGame);
     }
 
     makeKings(){
@@ -404,9 +396,6 @@ class ActiveGame{
             } else if(this.currentTurn === 'blue'){
                 this.currentTurn = 'red';
                 this.nextTurn = 'blue';
-
-            } else {
-                console.log('something has gone wrong with turn switching...');
             }
         }
     }
@@ -436,6 +425,8 @@ class ActiveGame{
             this.winningTeam = 'Red';
             return true;
         } else {
+            this.gameOver = false;
+            this.winningTeam = '';
             return false;
         }
     }
@@ -445,6 +436,17 @@ class ActiveGame{
         let redCheckerIDIndex = 0;
         let blueCheckerIDIndex = 0;
         let tile;
+
+        this.boardState = [
+            this.row0 = [],
+            this.row1 = [],
+            this.row2 = [],
+            this.row3 = [],
+            this.row4 = [],
+            this.row5 = [],
+            this.row6 = [],
+            this.row7 = []
+        ];
 
         for(let y = 0; y < this.boardState.length; y++){//for each row in board
             tileIndex++;
