@@ -19,7 +19,8 @@ router.get('/', function (req, res) {
             thisPlayerID : playerInQuestion
         })
     } else {//else, game not found
-        res.send('game not found >.<');
+        res.redirect('gameNotFound.ejs');
+
     }
 });
 

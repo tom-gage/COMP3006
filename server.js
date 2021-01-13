@@ -72,24 +72,7 @@ io.on("connection", async function(socket) {
     socket.on('disconnect', function() {
         console.log('Got disconnect!');
 
-        pruneActiveGames(findActiveGameByWSID(socket.id), socket.id);
-
-        //find active game by ws id
-        //remove player by id
-        //if game has no players, delete from active games
-        // let targetGame = findActiveGameByWSID(socket.id);
-        // if(targetGame){
-        //     if (targetGame.player1SocketID === socket.id){
-        //         targetGame.player1SocketID = '';
-        //     } else if(targetGame.player2SocketID === socket.id){
-        //         targetGame.player2SocketID = '';
-        //     }
-        //
-        //     if(targetGame.player1SocketID === '' && targetGame.player2SocketID === ''){
-        //         updateActiveGame(targetGame, 'delete');
-        //     }
-        // }
-
+        pruneEmptyActiveGames(findActiveGameByWSID(socket.id), socket.id);
 
     });
 });
@@ -148,13 +131,11 @@ function handleJoinRequest(joinRequest) {
 
         updateActiveGame(targetGame);
         console.log('sending initial board update...');
-        // io.emit('updateBoard', targetGame.getBoardStateAsHTML());//THIS SENDS BOARD UPDATE TO ALL USERS, NEEDS FIXING STAT
-
         sendEventToPlayers(targetGame, 'updateBoard', targetGame.getBoardStateAsHTML());
     }
 }
 
-function pruneActiveGames(targetGame, WSID) {
+function pruneEmptyActiveGames(targetGame, WSID) {
     if(targetGame){//if target game exists
         if (targetGame.player1SocketID === WSID){
             targetGame.player1SocketID = '';
@@ -251,57 +232,11 @@ app.use('/testPage.ejs', testPageRoute);
 
 
 app.get('*', function (request, response) {
-    response.send('page not found >.<');
+    response.send('404 page not found >.<');
 });
 
 server.listen(9000, function (request, response) {
     console.log('listening on port 9000');
 });
-
-
-
-
-
-//
-//
-//
-// app.get('/lobbyPage.html', function (req, res) {
-//     console.log('test page route reached');
-//     res.cookie('myCookie', 'chocolateChip');
-//     console.log('Cookies: ', req.cookies);
-// });
-
-// app.post('/lobbyPage.html', function (request, response) {
-//     console.log(request.body.name + ', ' + request.body.occupation);
-//
-//     Person.find({
-//         name:request.body.name
-//     }, function (err, response) {
-//         console.log(response);
-//     })
-
-    // let newPersonEntry = request.body;
-    // if(!newPersonEntry.name || !newPersonEntry.occupation){
-    //     response.send();
-    // }else{
-    //     newPersonEntry = new Person({
-    //         name : newPersonEntry.name,
-    //         occupation : newPersonEntry.occupation
-    //     });
-    //
-    //     newPersonEntry.save(function (err, Person) {
-    //         if(err){
-    //             console.log(err);
-    //         }
-    //         else{
-    //             console.log('new person added to database');
-    //         }
-    //
-    //     })
-    // }
-
-
-// });
-
 
 
