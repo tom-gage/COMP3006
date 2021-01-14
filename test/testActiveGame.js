@@ -307,16 +307,16 @@ describe('hooks', function () {
         })
     });
 
-    describe('ActiveGame.doTravelingMove(), 2,5 to 3,6 / downward rightward', function () {
+    describe('ActiveGame.doTravelingMove(), 5,2 to 6,1 / downward leftward', function () {
         it('should replace checker at requested position with checker at current position, then delete checker at current position', function () {
             let currentPosition = {
-                y : 2,
-                x : 5
+                y : 5,
+                x : 2
             };
 
             let requestedPosition = {
-                y : 3,
-                x : 6
+                y : 6,
+                x : 1
             };
 
             let startingTileCheckerID = activeGame.boardState[currentPosition.y][currentPosition.x].getCheckerID();
@@ -329,6 +329,272 @@ describe('hooks', function () {
             assert.equal(activeGame.boardState[requestedPosition.y][requestedPosition.x].isOccupied(), true);
             //checker being moved is original checker
             assert.equal(startingTileCheckerID, activeGame.boardState[requestedPosition.y][requestedPosition.x].getCheckerID());
+        })
+    });
+
+    describe('ActiveGame.doTravelingMove(), 5,6 to 4,5 / upward leftward', function () {
+        it('should replace checker at requested position with checker at current position, then delete checker at current position', function () {
+            let currentPosition = {
+                y : 5,
+                x : 6
+            };
+
+            let requestedPosition = {
+                y : 4,
+                x : 5
+            };
+
+            let startingTileCheckerID = activeGame.boardState[currentPosition.y][currentPosition.x].getCheckerID();
+
+            activeGame.doTravelingMove(currentPosition, requestedPosition);
+
+            //starting tile is not occupied
+            assert.equal(activeGame.boardState[currentPosition.y][currentPosition.x].isOccupied(), false);
+            //ending tile is occupied
+            assert.equal(activeGame.boardState[requestedPosition.y][requestedPosition.x].isOccupied(), true);
+            //checker being moved is original checker
+            assert.equal(startingTileCheckerID, activeGame.boardState[requestedPosition.y][requestedPosition.x].getCheckerID());
+        })
+    });
+
+    describe('ActiveGame.doTravelingMove(), 5,2 to 4,3 / upward rightward', function () {
+        it('should replace checker at requested position with checker at current position, then delete checker at current position', function () {
+            let currentPosition = {
+                y : 5,
+                x : 2
+            };
+
+            let requestedPosition = {
+                y : 4,
+                x : 3
+            };
+
+            let startingTileCheckerID = activeGame.boardState[currentPosition.y][currentPosition.x].getCheckerID();
+
+            activeGame.doTravelingMove(currentPosition, requestedPosition);
+
+            //starting tile is not occupied
+            assert.equal(activeGame.boardState[currentPosition.y][currentPosition.x].isOccupied(), false);
+            //ending tile is occupied
+            assert.equal(activeGame.boardState[requestedPosition.y][requestedPosition.x].isOccupied(), true);
+            //checker being moved is original checker
+            assert.equal(startingTileCheckerID, activeGame.boardState[requestedPosition.y][requestedPosition.x].getCheckerID());
+        })
+    });
+
+
+    describe('ActiveGame.canMakeValidAttackingMove(), blue attack forward', function () {
+        it('if checker can make valid attack, return true', function () {
+            let currentPosition = {
+                y : 5,
+                x : 4
+            };
+
+            activeGame.nextTurn = 'red';
+            activeGame.row4[3].addChecker(100, 'red');
+
+            assert.equal(activeGame.canMakeValidAttackingMove(currentPosition), true);
+        })
+    });
+
+    describe('ActiveGame.canMakeValidAttackingMove(), blue attack forward', function () {
+        it('if checker can make valid attack, return true', function () {
+            let currentPosition = {
+                y : 5,
+                x : 4
+            };
+
+            activeGame.nextTurn = 'red';
+            activeGame.row4[5].addChecker(100, 'red');
+
+            assert.equal(activeGame.canMakeValidAttackingMove(currentPosition), true);
+        })
+    });
+
+    describe('ActiveGame.canMakeValidAttackingMove(), red attack forward', function () {
+        it('if checker can make valid attack, return true', function () {
+            let currentPosition = {
+                y : 2,
+                x : 3
+            };
+
+            activeGame.nextTurn = 'blue';
+            activeGame.row3[2].addChecker(100, 'blue');
+
+            assert.equal(activeGame.canMakeValidAttackingMove(currentPosition), true);
+        })
+    });
+
+    describe('ActiveGame.canMakeValidAttackingMove(), red attack forward', function () {
+        it('if checker can make valid attack, return true', function () {
+            let currentPosition = {
+                y : 2,
+                x : 5
+            };
+
+            activeGame.nextTurn = 'blue';
+            activeGame.row3[6].addChecker(100, 'blue');
+
+            assert.equal(activeGame.canMakeValidAttackingMove(currentPosition), true);
+        })
+    });
+
+    describe('ActiveGame.canMakeValidAttackingMove(), red attack backward', function () {
+        it('if checker can make valid attack, return true', function () {
+            activeGame.initialiseBlankBoardState();
+
+            let currentPosition = {
+                y : 4,
+                x : 3
+            };
+
+            activeGame.row4[3].addChecker(100, 'red').checker.makeKing();
+
+            activeGame.nextTurn = 'blue';
+            activeGame.row3[2].addChecker(101, 'blue');
+
+            assert.equal(activeGame.canMakeValidAttackingMove(currentPosition), true);
+        })
+    });
+
+    describe('ActiveGame.canMakeValidAttackingMove(), red attack backward', function () {
+        it('if checker can make valid attack, return true', function () {
+            activeGame.initialiseBlankBoardState();
+
+            let currentPosition = {
+                y : 4,
+                x : 4
+            };
+
+            activeGame.row4[4].addChecker(100, 'red').checker.makeKing();
+
+            activeGame.nextTurn = 'blue';
+            activeGame.row3[5].addChecker(101, 'blue');
+
+            assert.equal(activeGame.canMakeValidAttackingMove(currentPosition), true);
+        })
+    });
+
+    describe('ActiveGame.canMakeValidAttackingMove(), blue attack backward', function () {
+        it('if checker can make valid attack, return true', function () {
+            activeGame.initialiseBlankBoardState();
+
+            let currentPosition = {
+                y : 4,
+                x : 3
+            };
+
+            activeGame.row4[3].addChecker(100, 'blue').checker.makeKing();
+
+            activeGame.nextTurn = 'red';
+            activeGame.row5[2].addChecker(101, 'red');
+
+            assert.equal(activeGame.canMakeValidAttackingMove(currentPosition), true);
+        })
+    });
+
+    describe('ActiveGame.canMakeValidAttackingMove(), blue attack backward', function () {
+        it('if checker can make valid attack, return true', function () {
+            activeGame.initialiseBlankBoardState();
+
+            let currentPosition = {
+                y : 4,
+                x : 3
+            };
+
+            activeGame.row4[3].addChecker(100, 'blue').checker.makeKing();
+
+            activeGame.nextTurn = 'red';
+            activeGame.row5[4].addChecker(101, 'red');
+
+            assert.equal(activeGame.canMakeValidAttackingMove(currentPosition), true);
+        })
+    });
+
+    describe('ActiveGame.canMakeValidAttackingMove(), no red attack available', function () {
+        it('if checker can make valid attack, return true', function () {
+            let currentPosition = {
+                y : 2,
+                x : 1
+            };
+
+            activeGame.nextTurn = 'blue';
+
+            assert.equal(activeGame.canMakeValidAttackingMove(currentPosition), false);
+        })
+    });
+
+    describe('ActiveGame.canMakeValidAttackingMove(), no blue attack available', function () {
+        it('if checker can make valid attack, return true', function () {
+            let currentPosition = {
+                y : 5,
+                x : 6
+            };
+
+            activeGame.nextTurn = 'red';
+
+            assert.equal(activeGame.canMakeValidAttackingMove(currentPosition), false);
+        })
+    });
+
+    describe('ActiveGame.canMakeValidAttackingMove(), no attack available, starting tile empty', function () {
+        it('if checker can make valid attack, return true', function () {
+            let currentPosition = {
+                y : 4,
+                x : 3
+            };
+
+            activeGame.nextTurn = 'red';
+
+            assert.equal(activeGame.canMakeValidAttackingMove(currentPosition), false);
+        })
+    });
+
+    describe('ActiveGame.validateAttackingMove(), requested tile is null', function () {
+        it('should return true if checker can make valid attack, false if not', function () {
+            let currentPosition = {
+                y : 2,
+                x : 1
+            };
+
+            let requestedPosition = {
+                y : 0,
+                x : -1
+            };
+
+            assert.equal(activeGame.validateAttackingMove(currentPosition, requestedPosition), false);
+        })
+    });
+
+    describe('ActiveGame.validateAttackingMove(), requested tile is occupied', function () {
+        it('should return true if checker can make valid attack, false if not', function () {
+            let currentPosition = {
+                y : 2,
+                x : 1
+            };
+
+            let requestedPosition = {
+                y : 0,
+                x : 3
+            };
+
+            assert.equal(activeGame.validateAttackingMove(currentPosition, requestedPosition), false);
+        })
+    });
+
+    describe('ActiveGame.validateAttackingMove(), attacked tile does not exist', function () {
+        it('should return true if checker can make valid attack, false if not', function () {
+            let currentPosition = {
+                y : 2,
+                x : 1
+            };
+
+            let requestedPosition = {
+                y : 4,
+                x : 3
+            };
+
+            assert.equal(activeGame.validateAttackingMove(currentPosition, requestedPosition), false);
         })
     });
 });

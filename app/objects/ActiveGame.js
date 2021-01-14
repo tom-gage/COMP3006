@@ -241,7 +241,7 @@ class ActiveGame{
         let endingTile = this.getTileByPosition(requestedPos);
 
         if(!startingTile || !endingTile){
-            console.log('move INVALID, tile is null');
+            console.log('move INVALID, starting/ending tile is null');
             return false;
         }
 
@@ -337,17 +337,16 @@ class ActiveGame{
                 break;
 
             default:
-                console.log('PROPOSED ATTACKING MOVE INVALID');
+                console.log('PROPOSED ATTACKING MOVE ILLEGAL');
                 return false;
         }
 
-        console.log('PROPOSED ATTACKING MOVE INVALID');
+        console.log('PROPOSED ATTACKING MOVE: y:' + requestedPos.y + ', x:' + requestedPos.x + ' INVALID');
         return false;
     }
 
     canMakeValidAttackingMove(currentPos){//if checker can make valid attack, return true
         console.log('Checking for valid attacking moves... ');
-        let currentTile = this.getTileByPosition(currentPos);
 
         let yArray = [-2, -2, 2 ,2];
         let xArray = [-2, 2, 2, -2];
@@ -388,7 +387,7 @@ class ActiveGame{
     }
 
     getTileByPosition(position){
-        if(this.boardState[position.y][position.x]){//if tile exists
+        if(this.boardState[position.y] && this.boardState[position.y][position.x]){//if tile exists
             return this.boardState[position.y][position.x];//return tile
         } else {
             return null;
@@ -571,6 +570,44 @@ class ActiveGame{
             }
             console.log(rowOut);
             rowOut = '';
+        }
+    }
+
+    initialiseBlankBoardState(){
+        let tileIndex = 1;
+        let redCheckerIDIndex = 0;
+        let blueCheckerIDIndex = 0;
+        let tile;
+
+        this.boardState = [
+            this.row0 = [],
+            this.row1 = [],
+            this.row2 = [],
+            this.row3 = [],
+            this.row4 = [],
+            this.row5 = [],
+            this.row6 = [],
+            this.row7 = []
+        ];
+
+        for(let y = 0; y < this.boardState.length; y++){//for each row in board
+            tileIndex++;
+            for(let x = 0; x < this.numberOfCols; x++){//for each column/position in row
+                tile = new this.Tile().addCoodinateID(y, x);
+
+                tileIndex++;
+                if(tileIndex & 1)//if tile index is odd
+                {
+                    tile.addColour('white');
+                }
+                else
+                {
+                    tile.addColour('black');
+                }
+
+                this.boardState[y].push(tile);
+                // console.log('row ' + y + ', position ' + x + ' updated with: ' + tile);
+            }
         }
     }
 }
