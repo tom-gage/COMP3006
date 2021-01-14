@@ -47,23 +47,25 @@ class ActiveGame{
         currentPos = this.parsePosition(currentPos);
         requestedPos = this.parsePosition(requestedPos);
 
-        let startingTile = this.boardState[currentPos.y][currentPos.x];
-        let endingTile = this.boardState[requestedPos.y][requestedPos.x];
+        let startingTile = this.getTileByPosition(currentPos);
+        let endingTile = this.getTileByPosition(requestedPos);
+
+
 
         //begin move validation
-        if(this.validateGameConditions(currentPos, requestedPos, startingTile, currentPlayerID)){//if game conditions are valid
+        if(this.validateGameConditions(currentPos, requestedPos, currentPlayerID)){//if game conditions are valid
 
             if(this.makingAMultiCapturePlay){//if making a multi capture play
                 console.log('attempting multi-capture play...');
                 if(startingTile.getCheckerID() === this.checkerInPlay.id){//if checker is same checker used in previous play
 
-                    if(this.validateAttackingMove(currentPos, requestedPos, startingTile, endingTile)){//if proposed move is a valid attacking play
-                        this.doAttackingMove(currentPos, requestedPos, startingTile, endingTile);//do move
+                    if(this.validateAttackingMove(currentPos, requestedPos)){//if proposed move is a valid attacking play
+                        this.doAttackingMove(currentPos, requestedPos);//do move
                         this.makeKings();
 
                         console.log('SUCCESS!');
                         console.log('LOOKING FOR ANOTHER MULTI CAPTURE PLAY...');
-                        if(this.canMakeValidAttackingMove(requestedPos, endingTile)){
+                        if(this.canMakeValidAttackingMove(requestedPos)){
                             console.log('ANOTHER MULTI CAPTURE PLAY AVAILABLE');
 
                             this.checkerInPlay = endingTile.checker;
@@ -76,18 +78,18 @@ class ActiveGame{
                     }
                 }
 
-            } else if(this.validateTravelingMove(currentPos, requestedPos, startingTile, endingTile)){//if making a travelling move
+            } else if(this.validateTravelingMove(currentPos, requestedPos)){//if making a travelling move
                 //do travel
-                this.doTravelingMove(startingTile, endingTile);
+                this.doTravelingMove(currentPos, requestedPos);
                 this.switchCurrentTurn();
 
-            } else if(this.validateAttackingMove(currentPos, requestedPos, startingTile, endingTile)){//if making an attacking move
+            } else if(this.validateAttackingMove(currentPos, requestedPos)){//if making an attacking move
                 //do attack + check for additional attack avenues for multi-capture plays
-                this.doAttackingMove(currentPos, requestedPos, startingTile, endingTile);
+                this.doAttackingMove(currentPos, requestedPos);
                 this.makeKings();
 
                 console.log('LOOKING FOR MULTI CAPTURE PLAY...');
-                if(this.canMakeValidAttackingMove(requestedPos, endingTile)){
+                if(this.canMakeValidAttackingMove(requestedPos)){
                     console.log('MULTI CAPTURE PLAY AVAILABLE');
 
                     // this.switchCurrentTurn();//bit confusing
@@ -119,7 +121,9 @@ class ActiveGame{
 
     }
 
-    validateGameConditions(currentPos, requestedPos, startingTile, currentPlayerID){
+    validateGameConditions(currentPos, requestedPos, currentPlayerID){
+        let startingTile = this.getTileByPosition(currentPos);
+
         if(this.gameOver){
             console.log('move INVALID, game is over');
             return false;
@@ -142,7 +146,16 @@ class ActiveGame{
         return true;
     }
 
-    validateTravelingMove(currentPos, requestedPos, startingTile, endingTile){
+    validateTravelingMove(currentPos, requestedPos){
+        let startingTile = this.getTileByPosition(currentPos);
+        let endingTile = this.getTileByPosition(requestedPos);
+
+        if(!startingTile || !endingTile){
+            console.log('move INVALID, tile is null');
+            return false;
+        }
+
+
         let moveForwardYVal;
         let moveBackwardYVal;
         let moveLeftXVal;
@@ -164,6 +177,11 @@ class ActiveGame{
         }
 
         //begin checks
+        if(!startingTile.isOccupied()){
+            console.log('move INVALID, starting tile not occupied');
+            return false;
+        }
+
         if(endingTile.isOccupied()){
             console.log('move INVALID, tile occupied');
             return false;
@@ -218,7 +236,15 @@ class ActiveGame{
         return false;
     }
 
-    validateAttackingMove(currentPos, requestedPos, startingTile, endingTile){
+    validateAttackingMove(currentPos, requestedPos){
+        let startingTile = this.getTileByPosition(currentPos);
+        let endingTile = this.getTileByPosition(requestedPos);
+
+        if(!startingTile || !endingTile){
+            console.log('move INVALID, tile is null');
+            return false;
+        }
+
         let attackForwardYVal;
         let attackBackwardYVal;
         let attackLeftXVal;
@@ -242,8 +268,13 @@ class ActiveGame{
         let tileBeingCaptured;
 
         //begin checks
+        if(!startingTile.isOccupied()){
+            console.log('move INVALID, starting tile not occupied');
+            return false;
+        }
+
         if(endingTile.isOccupied()){
-            console.log('move INVALID, tile occupied');
+            console.log('move INVALID, ending tile occupied');
             return false;
         }
 
@@ -314,46 +345,55 @@ class ActiveGame{
         return false;
     }
 
-    canMakeValidAttackingMove(currentPosition, currentTile){//if checker can make valid attack, return true
+    canMakeValidAttackingMove(currentPos){//if checker can make valid attack, return true
         console.log('Checking for valid attacking moves... ');
+        let currentTile = this.getTileByPosition(currentPos);
+
         let yArray = [-2, -2, 2 ,2];
         let xArray = [-2, 2, 2, -2];
         
         for(let n = 0; n <= 3; n++){
             let potentiallyAttackablePosition = {//define a potentially attackable tile
-                y : currentPosition.y + yArray[n],
-                x : currentPosition.x + xArray[n]
+                y : currentPos.y + yArray[n],
+                x : currentPos.x + xArray[n]
             };
 
-            if(potentiallyAttackablePosition.y >= 0 && potentiallyAttackablePosition.y <= 7){
-                if(potentiallyAttackablePosition.x >= 0 && potentiallyAttackablePosition.x <= 7){//if tile is within within the bounds of the board
-
-                    let potentiallyAttackableTile = this.boardState[potentiallyAttackablePosition.y][potentiallyAttackablePosition.x];
-                    console.log('checking position, y:' + potentiallyAttackablePosition.y + ', x: ' + potentiallyAttackablePosition.x);
-
-                    if(this.validateAttackingMove(currentPosition, potentiallyAttackablePosition, currentTile, potentiallyAttackableTile)){//check if its valid
-                        console.log('valid attacking move found!');
-                        return true;
-                    }
-                }
+            if(this.validateAttackingMove(currentPos, potentiallyAttackablePosition)){//check if its valid
+                console.log('valid attacking move found!');
+                return true;
             }
         }
         console.log('NO valid attacking moves found');
         return false;
     }
 
-    doTravelingMove(startingTile, endingTile){
+    doTravelingMove(currentPos, requestedPos){
         console.log('Doing travelling move...');
+        let startingTile = this.getTileByPosition(currentPos);
+        let endingTile = this.getTileByPosition(requestedPos);
+
         endingTile.placeChecker(startingTile.checker);//place checker
         startingTile.removeChecker();//then remove checker
     }
 
-    doAttackingMove(currentPos, requestedPos, startingTile, endingTile){
+    doAttackingMove(currentPos, requestedPos){
         console.log('Doing attacking move...');
+        let startingTile = this.getTileByPosition(currentPos);
+        let endingTile = this.getTileByPosition(requestedPos);
+
         endingTile.placeChecker(startingTile.checker);//place checker
         startingTile.removeChecker();//then remove checker
         //then remove checker being captured
         this.boardState[Math.abs(currentPos.y - (currentPos.y - requestedPos.y) / 2)][Math.abs(currentPos.x - (currentPos.x - requestedPos.x) / 2)].removeChecker();
+    }
+
+    getTileByPosition(position){
+        if(this.boardState[position.y][position.x]){//if tile exists
+            return this.boardState[position.y][position.x];//return tile
+        } else {
+            return null;
+        }
+
     }
 
     updateActiveGames(){//i'd say this doesn't need to be here...

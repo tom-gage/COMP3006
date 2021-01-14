@@ -156,21 +156,180 @@ describe('hooks', function () {
             assert.equal(activeGame.row0[1].getCheckerKing(), false);
             assert.equal(activeGame.row7[0].getCheckerKing(), false);
         })
-    })
+    });
 
-    describe('ActiveGame.updateActiveGames()', function () {
-        it('should replace existing ActiveGame object in ACTIVE_GAMES array with updated object based on matching game codes', function () {
-            ACTIVE_GAMES.push(activeGame);
+    describe('ActiveGame.doAttackingMove(), 0,1 to 2,3 / downward rightward', function () {
+        it('should place checker on ending tile, remove checker from starting tile and remove checker from tile diagonally between the two', function () {
+            let currentPosition = {
+                y : 0,
+                x : 1
+            };
 
-            activeGame.row0[7].removeChecker();
+            let middlePosition = {
+                y : 1,
+                x : 2
+            };
 
-            assert.notEqual(JSON.stringify(ACTIVE_GAMES[0]), JSON.stringify(activeGame));
+            let requestedPosition = {
+                y : 2,
+                x : 3
+            };
 
-            activeGame.updateActiveGames();
+            let startingTileCheckerID = activeGame.boardState[currentPosition.y][currentPosition.x].getCheckerID();
 
-            assert.equal(JSON.stringify(ACTIVE_GAMES[0]), JSON.stringify(activeGame));
+            activeGame.doAttackingMove(currentPosition, requestedPosition);
+            //starting tile is not occupied
+            assert.equal(activeGame.boardState[currentPosition.y][currentPosition.x].isOccupied(), false);
+            //ending tile is occupied
+            assert.equal(activeGame.boardState[requestedPosition.y][requestedPosition.x].isOccupied(), true);
+            //checker being moved is original checker
+            assert.equal(startingTileCheckerID, activeGame.boardState[requestedPosition.y][requestedPosition.x].getCheckerID());
+            //checker being attacked is deleted
+            assert.equal(activeGame.boardState[requestedPosition.y][requestedPosition.x].isOccupied(), true);
         })
-    })
+    });
 
+    describe('ActiveGame.doAttackingMove(), 0,7 to 2,5 / downward leftward', function () {
+        it('should place checker on ending tile, remove checker from starting tile and remove checker from tile diagonally between the two', function () {
+            let currentPosition = {
+                y : 0,
+                x : 7
+            };
+
+            let middlePosition = {
+                y : 1,
+                x : 6
+            };
+
+            let requestedPosition = {
+                y : 2,
+                x : 5
+            };
+
+            let startingTileCheckerID = activeGame.boardState[currentPosition.y][currentPosition.x].getCheckerID();
+
+            activeGame.doAttackingMove(currentPosition, requestedPosition);
+            //starting tile is not occupied
+            assert.equal(activeGame.boardState[currentPosition.y][currentPosition.x].isOccupied(), false);
+            //ending tile is occupied
+            assert.equal(activeGame.boardState[requestedPosition.y][requestedPosition.x].isOccupied(), true);
+            //checker being moved is original checker
+            assert.equal(startingTileCheckerID, activeGame.boardState[requestedPosition.y][requestedPosition.x].getCheckerID());
+            //checker being attacked is deleted
+            assert.equal(activeGame.boardState[requestedPosition.y][requestedPosition.x].isOccupied(), true);
+        })
+    });
+
+    describe('ActiveGame.doAttackingMove(), 6,3 to 4,1 / upward leftward', function () {
+        it('should place checker on ending tile, remove checker from starting tile and remove checker from tile diagonally between the two', function () {
+            let currentPosition = {
+                y : 6,
+                x : 3
+            };
+
+            let middlePosition = {
+                y : 5,
+                x : 2
+            };
+
+            let requestedPosition = {
+                y : 4,
+                x : 1
+            };
+
+            let startingTileCheckerID = activeGame.boardState[currentPosition.y][currentPosition.x].getCheckerID();
+
+            activeGame.doAttackingMove(currentPosition, requestedPosition);
+            //starting tile is not occupied
+            assert.equal(activeGame.boardState[currentPosition.y][currentPosition.x].isOccupied(), false);
+            //ending tile is occupied
+            assert.equal(activeGame.boardState[requestedPosition.y][requestedPosition.x].isOccupied(), true);
+            //checker being moved is original checker
+            assert.equal(startingTileCheckerID, activeGame.boardState[requestedPosition.y][requestedPosition.x].getCheckerID());
+            //checker being attacked is deleted
+            assert.equal(activeGame.boardState[requestedPosition.y][requestedPosition.x].isOccupied(), true);
+        })
+    });
+
+    describe('ActiveGame.doAttackingMove(), 7,2 to 5,4 / upward rightward', function () {
+        it('should place checker on ending tile, remove checker from starting tile and remove checker from tile diagonally between the two', function () {
+            let currentPosition = {
+                y : 7,
+                x : 2
+            };
+
+            let middlePosition = {
+                y : 6,
+                x : 3
+            };
+
+            let requestedPosition = {
+                y : 5,
+                x : 4
+            };
+
+            let startingTileCheckerID = activeGame.boardState[currentPosition.y][currentPosition.x].getCheckerID();
+
+            activeGame.doAttackingMove(currentPosition, requestedPosition);
+            //starting tile is not occupied
+            assert.equal(activeGame.boardState[currentPosition.y][currentPosition.x].isOccupied(), false);
+            //ending tile is occupied
+            assert.equal(activeGame.boardState[requestedPosition.y][requestedPosition.x].isOccupied(), true);
+            //checker being moved is original checker
+            assert.equal(startingTileCheckerID, activeGame.boardState[requestedPosition.y][requestedPosition.x].getCheckerID());
+            //checker being attacked is deleted
+            assert.equal(activeGame.boardState[requestedPosition.y][requestedPosition.x].isOccupied(), true);
+        })
+    });
+
+    describe('ActiveGame.doTravelingMove(), 2,5 to 3,6 / downward rightward', function () {
+        it('should replace checker at requested position with checker at current position, then delete checker at current position', function () {
+            let currentPosition = {
+                y : 2,
+                x : 5
+            };
+
+            let requestedPosition = {
+                y : 3,
+                x : 6
+            };
+
+            let startingTileCheckerID = activeGame.boardState[currentPosition.y][currentPosition.x].getCheckerID();
+
+            activeGame.doTravelingMove(currentPosition, requestedPosition);
+
+            //starting tile is not occupied
+            assert.equal(activeGame.boardState[currentPosition.y][currentPosition.x].isOccupied(), false);
+            //ending tile is occupied
+            assert.equal(activeGame.boardState[requestedPosition.y][requestedPosition.x].isOccupied(), true);
+            //checker being moved is original checker
+            assert.equal(startingTileCheckerID, activeGame.boardState[requestedPosition.y][requestedPosition.x].getCheckerID());
+        })
+    });
+
+    describe('ActiveGame.doTravelingMove(), 2,5 to 3,6 / downward rightward', function () {
+        it('should replace checker at requested position with checker at current position, then delete checker at current position', function () {
+            let currentPosition = {
+                y : 2,
+                x : 5
+            };
+
+            let requestedPosition = {
+                y : 3,
+                x : 6
+            };
+
+            let startingTileCheckerID = activeGame.boardState[currentPosition.y][currentPosition.x].getCheckerID();
+
+            activeGame.doTravelingMove(currentPosition, requestedPosition);
+
+            //starting tile is not occupied
+            assert.equal(activeGame.boardState[currentPosition.y][currentPosition.x].isOccupied(), false);
+            //ending tile is occupied
+            assert.equal(activeGame.boardState[requestedPosition.y][requestedPosition.x].isOccupied(), true);
+            //checker being moved is original checker
+            assert.equal(startingTileCheckerID, activeGame.boardState[requestedPosition.y][requestedPosition.x].getCheckerID());
+        })
+    });
 });
 
