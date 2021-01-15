@@ -10,13 +10,33 @@ describe('hooks', function () {
         checker = new Checker(100, 'red');
     });
 
-    describe('Tile.addCoodinateID()', function () {
-        it('should set Tile.CoodinateID to equal y & x input and return this.tile', function () {
-            let y = 0;
-            let x = 0;
-            tile.addCoodinateID(y,x);
-            assert.equal(tile.CoodinateID, '0,0');
-            assert.equal(tile, tile.addCoodinateID(y, x));
+    describe('Checker.getAsHTML()', function () {
+        it('should return checker as HTML', function () {
+            let expectedCheckerHTML = '<div class="dot red"></div>';
+
+            assert.equal(checker.getAsHTML(), expectedCheckerHTML);
+        })
+    });
+
+    describe('Checker.getAsHTML(), checker is king', function () {
+        it('should return checker as HTML', function () {
+            let expectedCheckerHTML = '<div class="dot red king"></div>';
+            checker.isKing = true;
+            assert.equal(checker.getAsHTML(), expectedCheckerHTML);
+        })
+    });
+
+
+    describe('Checker.makeKing()', function () {
+        it('should set isKing true', function () {
+            checker.makeKing();
+            assert.equal(checker.isKing, true);
+        })
+    });
+
+    describe('Checker.makeKing()', function () {
+        it('should set isKing true', function () {
+            assert.equal(checker.isKing, false);
         })
     });
 

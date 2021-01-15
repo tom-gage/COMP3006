@@ -2,13 +2,11 @@ let mongoose = require('mongoose');
 
 let User;
 
-function initDBConnection() {
+async function initDBConnection() {
 
-    const dbUrl = "mongodb+srv://barnaby:admin@cluster0.3qn4a.mongodb.net/myDatabase?retryWrites=true&w=majority";
+    let dbUrl = "mongodb+srv://barnaby:admin@cluster0.3qn4a.mongodb.net/myDatabase?retryWrites=true&w=majority";
+    // dbUrl = "ass";
 
-    mongoose.connect(dbUrl, {useUnifiedTopology: true, useNewUrlParser: true}).then(function () {
-        console.log('db initialised successfully');
-    });
 
     let userSchema = mongoose.Schema({
         username:String,
@@ -18,6 +16,19 @@ function initDBConnection() {
     });
 
     User = mongoose.model('Users', userSchema);
+
+    try{
+        await mongoose.connect(dbUrl, {useUnifiedTopology: true, useNewUrlParser: true}).then(function () {
+            console.log('db initialised successfully');
+            return true;
+        });
+
+    } catch (e) {
+        console.log('db connection failed!');
+        return false;
+    }
+
+
 }
 
 function getUserModel() {
@@ -27,24 +38,24 @@ function getUserModel() {
     return null;
 }
 
-function updateUser(user){
-    User.updateOne({
-        username : user.username
-    },{
-        wins : user.wins,
-        losses : user.losses
-    });
-}
-
-function getUsers(){
-    User.find({}, function (err, users) {
-        return users;
-    });
-}
+// function updateUser(user){
+//     User.updateOne({
+//         username : user.username
+//     },{
+//         wins : user.wins,
+//         losses : user.losses
+//     });
+// }
+//
+// function getUsers(){
+//     User.find({}, function (err, users) {
+//         return users;
+//     });
+// }
 
 module.exports = {
     initDBConnection,
-    getUserModel,
-    updateUser,
-    getUsers
+    getUserModel
+    // updateUser,
+    // getUsers
 };
