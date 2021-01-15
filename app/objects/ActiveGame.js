@@ -6,20 +6,19 @@ class ActiveGame{
     player2SocketID = '';
 
     //game vars
-    code;
-    player1ID;
-    player2ID;
+    code = '';
+    player1ID = '';
+    player2ID = '';
 
+    //game conditions
     gameOver = false;
     winningTeam = '';
 
-    //turn vars
     currentTurn = 'red';
     nextTurn = 'blue';
 
-    checkerHasBeenCaptured = false;
     makingAMultiCapturePlay = false;
-    checkerInPlay;
+    checkerInPlay = null;
 
     //board vars
     numberOfCols = 8;
@@ -32,8 +31,6 @@ class ActiveGame{
     row5;
     row6;
     row7;
-
-
 
     constructor(code, player1ID, player2ID) {
         this.code = code;
@@ -49,8 +46,6 @@ class ActiveGame{
 
         let startingTile = this.getTileByPosition(currentPos);
         let endingTile = this.getTileByPosition(requestedPos);
-
-
 
         //begin move validation
         if(this.validateGameConditions(currentPos, requestedPos, currentPlayerID)){//if game conditions are valid
@@ -92,7 +87,6 @@ class ActiveGame{
                 if(this.canMakeValidAttackingMove(requestedPos)){
                     console.log('MULTI CAPTURE PLAY AVAILABLE');
 
-                    // this.switchCurrentTurn();//bit confusing
                     this.checkerInPlay = endingTile.checker;
                     console.log('initialising checker in play: ' + JSON.stringify(this.checkerInPlay));
                     this.makingAMultiCapturePlay = true;
@@ -105,19 +99,32 @@ class ActiveGame{
 
             this.makeKings();
             this.determineGameover();
-            // this.updateActiveGames();
         }
         this.prettyPrintBoardState();
     }
 
     parsePosition(position){
-        let y = position.charAt(0);
-        let x = position.charAt(2);
+        let y;
+        let x;
 
-        return {
-            y : parseInt(y),
-            x : parseInt(x)
+        if(typeof position != 'string'){
+            return null;
         }
+
+        if(position.charAt(0) && position.charAt(2)){
+            y = position.charAt(0);
+            x = position.charAt(2);
+        }
+
+        if(parseInt(y) && parseInt(x)){
+            return {
+                y : parseInt(y),
+                x : parseInt(x)
+            }
+        } else {
+            return null;
+        }
+
 
     }
 
@@ -126,6 +133,11 @@ class ActiveGame{
 
         if(this.gameOver){
             console.log('move INVALID, game is over');
+            return false;
+        }
+
+        if(!startingTile){
+            console.log('move INVALID, starting tile is null');
             return false;
         }
 
@@ -387,24 +399,17 @@ class ActiveGame{
     }
 
     getTileByPosition(position){
-        if(this.boardState[position.y] && this.boardState[position.y][position.x]){//if tile exists
-            return this.boardState[position.y][position.x];//return tile
-        } else {
-            return null;
+        if(position){
+            if(this.boardState[position.y] && this.boardState[position.y][position.x]){//if tile exists
+                return this.boardState[position.y][position.x];//return tile
+            } else {
+                return null;
+            }
         }
 
+        return null;
     }
 
-    updateActiveGames(){//i'd say this doesn't need to be here...
-        // let thisGame = this;
-        // let gameCode = this.code;
-
-        // let index = ACTIVE_GAMES.findIndex(function (activeGame) {
-        //     return activeGame.code.toString() === gameCode.toString();
-        // });
-
-        // ACTIVE_GAMES.splice(index, 1, thisGame);
-    }
 
     makeKings(){
         let tile;

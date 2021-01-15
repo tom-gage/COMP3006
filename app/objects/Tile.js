@@ -2,9 +2,9 @@ class Tile{
     Checker = require('./Checker');
 
     //VARS
-    CoodinateID;
-    colour;
-    checker;
+    CoodinateID = '';
+    colour = '';
+    checker = '';
 
     //CONSTRUCTOR
     constructor() {

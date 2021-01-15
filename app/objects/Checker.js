@@ -1,11 +1,12 @@
 class Checker{
-    id;
-    team;
+    id = '';
+    team = '';
     isKing = false;
 
     constructor(id, team) {
         this.id = id;
         this.team = team;
+        this.isKing = false;
     }
 
     getAsHTML(){
