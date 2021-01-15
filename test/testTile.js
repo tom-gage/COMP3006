@@ -138,5 +138,152 @@ describe('hooks', function () {
         })
     });
 
-    
+    describe('Tile.getCheckerAsHTML()', function () {
+        it('should return checker as HTML', function () {
+            let expectedCheckerAsHTML = '<div class="dot red"></div>';
+            tile.addChecker(101, 'red');
+            assert.equal(tile.getCheckerAsHTML(), expectedCheckerAsHTML);
+        })
+    });
+
+    describe('Tile.getCheckerAsHTML()', function () {
+        it('should return checker as HTML', function () {
+            let expectedCheckerAsHTML = '<div class="dot blue"></div>';
+            tile.addChecker(102, 'blue');
+            assert.equal(tile.getCheckerAsHTML(), expectedCheckerAsHTML);
+        })
+    });
+
+    describe('Tile.getCheckerAsHTML(), checker not set', function () {
+        it('should return checker as HTML', function () {
+            let expectedCheckerAsHTML = '';
+            assert.equal(tile.getCheckerAsHTML(), expectedCheckerAsHTML);
+        })
+    });
+
+    describe('Tile.getCheckerID()', function () {
+        it('should return checker ID', function () {
+            let expectedCheckerID = '';
+            assert.equal(tile.getCheckerID(), expectedCheckerID);
+        })
+    });
+
+    describe('Tile.getCheckerID()', function () {
+        it('should return checker ID', function () {
+            let expectedCheckerID = '100';
+            tile.addChecker(100, 'blue');
+            assert.equal(tile.getCheckerID(), expectedCheckerID);
+        })
+    });
+
+    describe('Tile.getCheckerID()', function () {
+        it('should return checker ID', function () {
+            let expectedCheckerID = '101';
+            tile.addChecker(101, 'blue');
+            assert.equal(tile.getCheckerID(), expectedCheckerID);
+        })
+    });
+
+
+    describe('Tile.getCheckerTeam()', function () {
+        it('should return checker team', function () {
+            let expectedCheckerTeam = 'blue';
+            tile.addChecker(101, 'blue');
+            assert.equal(tile.getCheckerTeam(), expectedCheckerTeam);
+        })
+    });
+
+    describe('Tile.getCheckerTeam()', function () {
+        it('should return checker team', function () {
+            let expectedCheckerTeam = 'red';
+            tile.addChecker(101, 'red');
+            assert.equal(tile.getCheckerTeam(), expectedCheckerTeam);
+        })
+    });
+
+    describe('Tile.getCheckerTeam(), checker not set', function () {
+        it('should return checker team', function () {
+            let expectedCheckerTeam = '';
+            assert.equal(tile.getCheckerTeam(), expectedCheckerTeam);
+        })
+    });
+
+
+
+    describe('Tile.getCheckerKing(), checker not set', function () {
+        it('should return checker king status', function () {
+            let expectedCheckerKing = false;
+            assert.equal(tile.getCheckerKing(), expectedCheckerKing);
+        })
+    });
+
+    describe('Tile.getCheckerKing(), checker set', function () {
+        it('should return checker king status', function () {
+            let expectedCheckerKing = true;
+            tile.addChecker(101, 'red').makeCheckerKing();
+            assert.equal(tile.getCheckerKing(), expectedCheckerKing);
+        })
+    });
+
+
+
+    describe('Tile.removeChecker()', function () {
+        it('should set checker as undefined', function () {
+            tile.addChecker(101, 'red');
+            tile.removeChecker();
+            assert.equal(tile.checker, undefined);
+        })
+    });
+
+
+    describe('Tile.placeChecker()', function () {
+        it('should set checker as checker input', function () {
+            let checker = new Checker(101, 'red');
+            tile.placeChecker(checker);
+            assert.equal(JSON.stringify(tile.checker),JSON.stringify(checker));
+        })
+    });
+
+    describe('Tile.placeChecker()', function () {
+        it('should set checker as checker input', function () {
+            let checker = new Checker(100, 'blue');
+            tile.placeChecker(checker);
+            assert.equal(JSON.stringify(tile.checker),JSON.stringify(checker));
+        })
+    });
+
+
+    describe('Tile.makeCheckerKing()', function () {
+        it('should set checker as checker king', function () {
+            let checker = new Checker(100, 'blue');
+            tile.placeChecker(checker);
+            tile.makeCheckerKing();
+            assert.equal(tile.checker.isKing, true);
+        })
+    });
+
+    describe('Tile.makeCheckerKing(), checker not set', function () {
+        it('should set checker as checker king', function () {
+            let checker = new Checker(100, 'blue');
+            tile.makeCheckerKing();
+            assert.equal(tile.checker, undefined);
+        })
+    });
+
+
+
+    describe('Tile.isOccupied(), checker not set', function () {
+        it('should return true if checker is set', function () {
+            let checker = new Checker(100, 'blue');
+            assert.equal(tile.isOccupied(), false);
+        })
+    });
+
+    describe('Tile.isOccupied(), set', function () {
+        it('should return true if checker is set', function () {
+            let checker = new Checker(101, 'red');
+            tile.placeChecker(checker);
+            assert.equal(tile.isOccupied(), true);
+        })
+    });
 });
