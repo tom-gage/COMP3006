@@ -22,7 +22,7 @@ router.get('/', function (req, res) {
 //POST
 router.post('/', function (req, res) {
     //set username
-    req.session.username = req.body.username;
+    // req.session.username = req.body.username;
 
     res.render('mainMenuPage.ejs', {
         highScoresList : getHighScoresList()

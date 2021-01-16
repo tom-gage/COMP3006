@@ -19,7 +19,7 @@ router.get('/', function (req, res) {
             thisPlayerID : playerInQuestion
         })
     } else {//else, game not found
-        res.redirect('gameNotFound.ejs');
+        res.render('gameNotFound.ejs');
 
     }
 });
@@ -49,7 +49,15 @@ function createNewActiveGame(req, res){
     // let gameCode = Math.floor((Math.random() * 1000) + 1).toString();
     let gameCode = 'G_' + Math.random().toString(36).substr(2, 9);
 
-    let player1ID = req.session.userID;
+    let player1ID;
+
+    if(!req.session.userID){
+        player1ID = 'U_' + Math.random().toString(36).substr(2, 9);
+    } else {
+        player1ID = req.session.userID;
+    }
+
+
 
     let newGame = new ActiveGame(gameCode, player1ID, 'Not here yet');
     playerInQuestion = newGame.player1ID;

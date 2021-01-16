@@ -21,12 +21,12 @@ let app = express();
 DB.initDBConnection();
 let User = DB.getUserModel();
 
-//vars
+global.USERS = [];
 User.find({}, function (err, users) {
     global.USERS = users;
 });
 
-global.ACTIVE_USERS = [];
+// global.ACTIVE_USERS = [];
 global.ACTIVE_GAMES = [];
 
 //setup app
@@ -230,6 +230,9 @@ app.use('/testLobbyPage.ejs', lobbyPageRoute);
 let testPageRoute = require('./routeHandlers/testPage');
 app.use('/testPage.ejs', testPageRoute);
 
+// app.get('/gameNotFound.ejs', function (req, res) {
+//     res.render('/gameNotFound.ejs');
+// });
 
 app.get('*', function (request, response) {
     response.send('404 page not found >.<');
@@ -240,3 +243,4 @@ server.listen(9000, function (request, response) {
 });
 
 
+module.exports = server;
