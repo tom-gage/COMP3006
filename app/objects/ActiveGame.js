@@ -5,6 +5,8 @@ class ActiveGame{
     player1SocketID = '';
     player2SocketID = '';
 
+    messages = [];
+
     //game vars
     code = '';
     player1ID = '';

@@ -69,6 +69,16 @@ io.on("connection", async function(socket) {
         await handleMoveRequest(moveRequest);
     });
 
+    //on message
+    socket.on('sentMessage', async function (msg) {
+        console.log('message received: ');
+        console.log(msg);
+
+        let message = JSON.parse(msg);
+
+        await handleMessage(message);
+    });
+
     socket.on('disconnect', function() {
         console.log('Got disconnect!');
 
@@ -78,6 +88,15 @@ io.on("connection", async function(socket) {
 });
 
 //functions
+function handleMessage(message){
+    let targetGame = findActiveGame(message.gameCode);
+    if(targetGame){
+        targetGame.messages.push(message.playerID + ': ' + message.messageBody);
+        sendEventToPlayers(targetGame, 'updateMessages', JSON.stringify(targetGame.messages));
+    }
+
+}
+
 async function handleMoveRequest(moveRequest){
     let targetGame = findActiveGame(moveRequest.gameCode);
 
@@ -132,6 +151,7 @@ function handleJoinRequest(joinRequest) {
         updateActiveGame(targetGame);
         console.log('sending initial board update...');
         sendEventToPlayers(targetGame, 'updateBoard', targetGame.getBoardStateAsHTML());
+        sendEventToPlayers(targetGame, 'updateMessages', JSON.stringify(targetGame.messages));
     }
 }
 

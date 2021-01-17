@@ -50,13 +50,50 @@
 
         })
 
+        socket.on('updateMessages', function (msg) {
+            console.log('updateMessages received');
+            console.log(msg);
+            let newMessages = JSON.parse(msg);
+            let messageLog = '';
+
+            newMessages.forEach(function (message) {
+                messageLog += message;
+                messageLog += '\n';
+            })
+
+            // for(let i = newMessages.length - 1; i >= 0; i--){
+            //     messageLog += newMessages[i];
+            //     messageLog += '\n';
+            // }
+
+            $('#messages').text(messageLog);
+            scrollToBottom('messages');
+        })
+
         $(document).ready(function(){
             $(document).on('click', '.boardTile', function (event) {//deviation from usual syntax to allow for dynamic elements
                 prepareMove(this);
             });
+
+            $('#sendMessage').on('click', function (event) {
+                let message = $('#messageBox').val();
+                if(message){
+                    socket.emit('sentMessage', JSON.stringify(
+                        {
+                            gameCode : gameCode,
+                            playerID : playerID,
+                            messageBody : message
+                        }
+                    ));
+                    $('#messageBox').val('');
+                }
+            })
         });
 
-
+        function scrollToBottom (id) {
+            var div = document.getElementById(id);
+            div.scrollTop = div.scrollHeight - div.clientHeight;
+        }
 
         function prepareMove(tile){
             if(moveArray.length > 0){
@@ -102,10 +139,12 @@
     </div>
 
     <div class="row">
+
         <div class="col-md-12">
             <p id="gameMessage"></p>
             <div id="board"></div>
         </div>
+
     </div>
 
     <br>
@@ -122,6 +161,24 @@
         <div class="col-md-4">
 
         </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+
+        </div>
+
+        <div class="col-md-6">
+            <pre id="messages" style="height: 150px; width: 100%; margin-top: 40px;overflow: -moz-scrollbars-none; background-color: aliceblue"></pre>
+
+            <input type="text" id="messageBox" style="display: block; width: 100%; margin-bottom: 10px; padding: 10px;" />
+            <button id="sendMessage" style="width: 100%; height: 40px;">Send Message</button>
+        </div>
+
+        <div class="col-md-3">
+
+        </div>
+
     </div>
 </div>
 
