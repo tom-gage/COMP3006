@@ -32,14 +32,18 @@ function handleLogin(req, res){
     let username = req.body.username;
     let password = req.body.password;
 
-    if(USERS.find(function (user) {//if input matches existing username and pw
-        return (user.username === username && user.password === password);
-    })) {
-        login(req, res);
-    } else {
-        console.log('login failure');
-        res.redirect('loginPage.ejs');//no login
+    if(!username || !password){
+        if(USERS.find(function (user) {//if input matches existing username and pw
+            return (user.username === username && user.password === password);
+        })) {
+            login(req, res);
+        } else {
+            console.log('login failure');
+            res.redirect('loginPage.ejs');//no login
+        }
     }
+
+
 }
 
 function userIsLoggedIn(username) {

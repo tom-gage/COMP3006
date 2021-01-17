@@ -5,42 +5,68 @@
     <title>Main Menu Page</title>
     <link rel="stylesheet" href="CSS/stylesheet.css">
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 
 <body>
-<h1>Main Page</h1>
+<div class="jumbotron text-center">
+    <div class="row">
+        <div class="col-md-2">
 
-<a href="loginPage.ejs">Login here</a>
+        </div>
+        <div class="col-md-8">
+            <h1>Welcome to Online Checkers!</h1>
+        </div>
+        <div class="col-md-2">
+            <a href="loginPage.ejs">Sign in or Sign up</a>
+        </div>
+    </div>
 
-<br>
-<!--create a game and nav to game page-->
-<form action="boardPage.ejs" method="post">
-    <p>create game</p>
-    <input type="hidden" name="requestedAction" value="createGame">
-    <input type="submit" value="create game">
-</form>
+</div>
 
-<br>
-<!--nav to an existing game page-->
-<form action="boardPage.ejs" method="get">
-    <p>enter code</p>
-    <input type="text" id="codeEntry" name="gameCode" value="abc123">
-    <input type="submit" value="Join a Game">
-</form>
+<div class="container-fluid text-center">
+    <div class="row">
+        <div class="col-md-3">
+            <h4>Tutorial</h4>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ac euismod justo. Aenean finibus nisl nec ligula elementum consequat. Ut imperdiet quam non magna sollicitudin interdum. Proin in purus dolor. Morbi viverra in mauris sed venenatis. Aliquam cursus et lorem sed malesuada. In hac habitasse platea dictumst. Nam odio justo, aliquam eu erat at, mattis iaculis est. Curabitur blandit nulla ac urna porta egestas non sed urna. Morbi in sollicitudin lectus.
+                Aenean eu interdum eros. Sed maximus hendrerit molestie. Nunc mollis id purus at consequat. Nulla facilisi. Praesent ut lacus arcu. Vivamus a justo finibus nisi dictum iaculis. Maecenas pretium commodo leo, a aliquam turpis vehicula eget. Mauris hendrerit fermentum condimentum. Donec accumsan dolor pretium leo ultricies, et ultrices nibh posuere. Nam vitae sem at mauris luctus convallis vel vitae orci. Praesent in mi pharetra, lacinia nulla sed, hendrerit magna. Etiam vel volutpat ligula. Fusce lacinia lacus ut tellus cursus, sit amet tristique est porta. Maecenas eget scelerisque nunc, eu euismod ante. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+            </p>
+        </div>
 
-<br>
+        <div class="col-md-6">
+            <h2>Join a friends game</h2>
+            <br>
+            <form action="boardPage.ejs" method="get">
+                <input type="text" class="form-control centre" id="codeEntry" name="gameCode" value="abc123" style="width: 50%;">
+                <br>
+                <input type="submit" value="Join Game!" class="btn btn-outline-success">
+            </form>
+            <br>
 
-<ol>
-    <li><%= highScoresList[0].username%> - <%= highScoresList[0].wins%></li>
-    <li><%= highScoresList[1].username%> - <%= highScoresList[1].wins%></li>
-    <li><%= highScoresList[2].username%> - <%= highScoresList[2].wins%></li>
-    <li><%= highScoresList[3].username%> - <%= highScoresList[3].wins%></li>
-    <li><%= highScoresList[4].username%> - <%= highScoresList[4].wins%></li>
-</ol>
+            <h2>Create your own game!</h2>
+            <br>
+            <form action="boardPage.ejs" method="post">
+                <input type="hidden" name="requestedAction" value="createGame">
+                <input type="submit" value="Create Game!" class="btn btn-outline-success">
+            </form>
+        </div>
 
-
-
+        <div class="col-md-3">
+            <h4>High Scores</h4>
+            <ol>
+                <li><%= highScoresList[0].username%> - <%= highScoresList[0].wins%></li>
+                <li><%= highScoresList[1].username%> - <%= highScoresList[1].wins%></li>
+                <li><%= highScoresList[2].username%> - <%= highScoresList[2].wins%></li>
+                <li><%= highScoresList[3].username%> - <%= highScoresList[3].wins%></li>
+                <li><%= highScoresList[4].username%> - <%= highScoresList[4].wins%></li>
+            </ol>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

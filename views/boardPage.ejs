@@ -5,11 +5,13 @@
     <title>board page</title>
     <link rel="stylesheet" href="CSS/stylesheet.css">
 
-
-    <script src="JS/scripts.js"></script>
-
     <script src="/socket.io/socket.io.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         let socket = io();
 
@@ -81,23 +83,63 @@
         }
 
     </script>
-
-
 </head>
 <body>
-<h1>board page reached!</h1>
-<h2>Game code is: <%= gameCode%></h2>
-<h5>user1 session ID = <%= player1ID%> </h5>
-<p>vs</p>
-<h5>user2 session ID = <%= player2ID%></h5>
-<br>
 
-<p id="debugTrigger">debug trigger here!</p>
-<p id="turnDisplay">turn display here!</p>
+<div class="container-fluid text-center">
+    <div class="row topper">
+        <div class="col-md-1">
+            <a href="mainMenuPage.ejs">Main Menu</a>
+        </div>
 
-<p id="gameMessage"></p>
-<div id="board">
+        <div class="col-md-10">
+            <h2 style="padding: 20px">Game Code is:  <%= gameCode%></h2>
+        </div>
 
+        <div class="col-md-1">
+            <h6 style="padding: 20px"></h6>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <p id="gameMessage"></p>
+            <div id="board"></div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <div class="col-md-4">
+
+        </div>
+
+        <div class="col-md-4">
+            <p id="turnDisplay">It's Red Team's turn</p>
+        </div>
+
+        <div class="col-md-4">
+
+        </div>
+    </div>
 </div>
+
+
+
+
+
+<!--<h1>board page reached!</h1>-->
+<!--<h2>Game code is: <%= gameCode%></h2>-->
+<!--<h5>user1 session ID = <%= player1ID%> </h5>-->
+<!--<p>vs</p>-->
+<!--<h5>user2 session ID = <%= player2ID%></h5>-->
+<!--<br>-->
+
+<!--<p id="debugTrigger">debug trigger here!</p>-->
+
+
+
+
 </body>
 </html>

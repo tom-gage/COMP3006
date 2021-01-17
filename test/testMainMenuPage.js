@@ -12,7 +12,7 @@ describe('hooks', function () {
     });
 
     describe('mainMenuPage GET', function () {
-        it('is the main menu', function (done) {
+        it('user accesses the main menu', function (done) {
             request(server).get('/mainMenuPage.ejs')
                 .expect(200)
                 .expect(/Main Menu Page/, done)
@@ -20,7 +20,7 @@ describe('hooks', function () {
     });
 
     describe('mainMenuPage POST', function () {
-        it('is the main menu', function (done) {
+        it('user accesses the main menu', function (done) {
             request(server).get('/mainMenuPage.ejs')
                 .expect(200)
                 .expect(/Main Menu Page/, done)

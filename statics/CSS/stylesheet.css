@@ -1,5 +1,26 @@
+body{
+    background-color: ghostwhite;
+}
+
 div.dot{
     display: block;
+}
+
+.centre {
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
+
+.jumbotron.text-center {
+    background-color: powderblue;
+}
+
+.topper {
+    background-color: powderblue;
+    height: 100px;
+    margin: auto;
+    padding: 10px;
 }
 
 .boardTile {
