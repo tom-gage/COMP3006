@@ -116,11 +116,15 @@ class ActiveGame{
             x = position.charAt(2);
         }
 
-        if(parseInt(y) && parseInt(x)){
-            return {
-                y : parseInt(y),
-                x : parseInt(x)
+        if(Number.isInteger(parseInt(y))){
+            if(Number.isInteger(parseInt(x))){
+                return {
+                    y : parseInt(y),
+                    x : parseInt(x)
+                }
             }
+
+
         } else {
             return null;
         }
@@ -154,7 +158,7 @@ class ActiveGame{
             console.log('move INVALID, not your checker');
             return false;
         }
-
+        console.log('game conditions valid...');
         return true;
     }
 
@@ -162,8 +166,11 @@ class ActiveGame{
         let startingTile = this.getTileByPosition(currentPos);
         let endingTile = this.getTileByPosition(requestedPos);
 
+        console.log(JSON.stringify(startingTile));
+        console.log(JSON.stringify(endingTile));
+
         if(!startingTile || !endingTile){
-            console.log('move INVALID, tile is null');
+            console.log('Travelling move INVALID, starting/ending tile is null');
             return false;
         }
 
@@ -253,7 +260,7 @@ class ActiveGame{
         let endingTile = this.getTileByPosition(requestedPos);
 
         if(!startingTile || !endingTile){
-            console.log('move INVALID, starting/ending tile is null');
+            console.log('Attacking move INVALID, starting/ending tile is null');
             return false;
         }
 
@@ -399,10 +406,15 @@ class ActiveGame{
     }
 
     getTileByPosition(position){
+        console.log('getting tile by position...');
+        console.log(JSON.stringify(position));
+
         if(position){
             if(this.boardState[position.y] && this.boardState[position.y][position.x]){//if tile exists
+                // console.log('tile exists');
                 return this.boardState[position.y][position.x];//return tile
             } else {
+                // console.log('tile does not exist');
                 return null;
             }
         }

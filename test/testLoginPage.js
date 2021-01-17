@@ -17,7 +17,7 @@ describe('hooks', function () {
             request(server)
                 .get('/loginPage.ejs')
                 .expect(200)
-                .expect(/Login Page/, done)
+                .expect(/Login and Registration/, done)
         })
     });
 
