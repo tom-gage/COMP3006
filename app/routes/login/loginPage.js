@@ -3,10 +3,14 @@ let session = require('express-session');
 let DB = require("../app/utilityClasses/DB.js");
 
 let router = express.Router();
+// let router = module.exports = express();
 
+// router.set('views', __dirname);
+// router.set('view engine', 'ejs');
 
 //GET
 router.get('/', function (req, res) {
+    console.log('got login page');
     res.render('loginPage.ejs',{});
 });
 
