@@ -1,5 +1,5 @@
 const assert = require('chai').assert;
-const routes = require('../routeHandlers/boardPage');
+// const routes = require('../routeHandlers/boardPage');
 const request = require('supertest');
 
 const ActiveGame = require('../app/objects/ActiveGame');
@@ -29,7 +29,7 @@ describe('hooks', function () {
                 .send({ requestedAction: 'createGame'})
                 .type('form')
                 .expect(200)
-                .expect(/board page reached/, done())
+                .expect(/board page reached/, done)
         })
     });
 

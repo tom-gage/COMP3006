@@ -38,20 +38,6 @@ function getUserModel() {
     return null;
 }
 
-// function updateUser(user){
-//     User.updateOne({
-//         username : user.username
-//     },{
-//         wins : user.wins,
-//         losses : user.losses
-//     });
-// }
-//
-// function getUsers(){
-//     User.find({}, function (err, users) {
-//         return users;
-//     });
-// }
 
 module.exports = {
     initDBConnection,

@@ -1,5 +1,5 @@
 const assert = require('chai').assert;
-const routes = require('../routeHandlers/boardPage');
+// const routes = require('../routeHandlers/boardPage');
 
 const request = require('supertest');
 const server = require('../server');

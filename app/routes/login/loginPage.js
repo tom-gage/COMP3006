@@ -1,21 +1,21 @@
+let path = require('path');
+let DB = require("../../db/DB.js");
+
 let express = require('express');
-let session = require('express-session');
-let DB = require("../app/utilityClasses/DB.js");
+let app = module.exports = express();
 
-let router = express.Router();
-// let router = module.exports = express();
-
-// router.set('views', __dirname);
-// router.set('view engine', 'ejs');
+app.set('views', __dirname);
+app.set('view engine', 'ejs');
+app.use(express.static(path.join(__dirname, '../../statics')));//nb: makes statics dir available to server
 
 //GET
-router.get('/', function (req, res) {
+app.get('/loginPage.ejs', function (req, res) {
     console.log('got login page');
     res.render('loginPage.ejs',{});
 });
 
 //POST
-router.post('/', async function (req, res) {
+app.post('/loginPage.ejs', async function (req, res) {
     console.log('login page request of type...');
     let requestedAction = req.body.requestedAction;
 
@@ -88,4 +88,4 @@ function login(req, res) {
     res.redirect('mainMenuPage.ejs');
 }
 
-module.exports = router;
+// module.exports = router;

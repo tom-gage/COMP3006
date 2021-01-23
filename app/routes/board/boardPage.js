@@ -1,12 +1,17 @@
-let ActiveGame = require('../app/objects/ActiveGame');
+let path = require('path');
+let ActiveGame = require('../../objects/ActiveGame');
 
 let express = require('express');
-let router = express.Router();
+let app = module.exports = express();
+
+app.set('views', __dirname);
+app.set('view engine', 'ejs');
+app.use(express.static(path.join(__dirname, '../../statics')));//nb: makes statics dir available to server
 
 let playerInQuestion;
 
 //GET, join game
-router.get('/', function (req, res) {
+app.get('/boardPage.ejs', function (req, res) {
     console.log('- - - - JOIN GAME REQUEST RECEIVED - - - -');
 
     let game = joinActiveGame(req, res);
@@ -19,13 +24,13 @@ router.get('/', function (req, res) {
             thisPlayerID : playerInQuestion
         })
     } else {//else, game not found
-        res.render('gameNotFound.ejs');
+        res.render('../gameNotFound.ejs');
 
     }
 });
 
 //POST, create game
-router.post('/', function (req, res) {
+app.post('/boardPage.ejs', function (req, res) {
     let game;
 
     if(req.body.requestedAction === 'createGame'){//if create game
@@ -57,16 +62,10 @@ function createNewActiveGame(req, res){
         player1ID = req.session.userID;
     }
 
-
-
     let newGame = new ActiveGame(gameCode, player1ID, 'Not here yet');
     playerInQuestion = newGame.player1ID;
 
-    console.log('ACTIVE GAMES PRE ADD: ' + ACTIVE_GAMES);
-
     ACTIVE_GAMES.push(newGame);
-
-    console.log('ACTIVE GAMES POST ADD: ' + ACTIVE_GAMES);
 
     console.log('new game created, gameCode: ' + gameCode + ', player1ID: ' + player1ID);
 
@@ -110,4 +109,4 @@ function joinActiveGame(req, res){
 }
 
 
-module.exports = router;
+// module.exports = router;

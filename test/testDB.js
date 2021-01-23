@@ -1,5 +1,5 @@
 const assert = require('chai').assert;
-const DB = require('../app/utilityClasses/DB');
+const DB = require('../app/db/DB');
 
 describe('hooks', function () {
 

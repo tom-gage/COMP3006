@@ -1,8 +1,8 @@
 const assert = require('chai').assert;
-const routes = require('../routeHandlers/boardPage');
+// const routes = require('../routeHandlers/boardPage');
 const request = require('supertest');
 
-const DB = require('../app/utilityClasses/DB');
+const DB = require('../app/db/DB');
 const server = require('../server');
 
 

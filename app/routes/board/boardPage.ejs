@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>board page</title>
-    <link rel="stylesheet" href="CSS/stylesheet.css">
+
+    <link rel="stylesheet" href="/CSS/stylesheet.css">
 
     <script src="/socket.io/socket.io.js"></script>
 
@@ -18,6 +19,7 @@
         let gameCode = "<%= gameCode%>";
         let playerID = '<%= thisPlayerID%>';
         let moveArray = [];
+
 
         socket.on('connect', function () {
             console.log('socket id is: ' + socket.id);
@@ -78,6 +80,7 @@
             $('#sendMessage').on('click', function (event) {
                 let message = $('#messageBox').val();
                 if(message){
+                    console.log('sending message...');
                     socket.emit('sentMessage', JSON.stringify(
                         {
                             gameCode : gameCode,

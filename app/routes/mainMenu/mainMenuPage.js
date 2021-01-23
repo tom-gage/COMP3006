@@ -1,8 +1,13 @@
+let path = require('path');
 let express = require('express');
-let router = express.Router();
+let app = module.exports = express();
+
+app.set('views', __dirname);
+app.set('view engine', 'ejs');
+app.use(express.static(path.join(__dirname, '../../statics')));//nb: makes statics dir available to server
 
 //GET
-router.get('/', function (req, res) {
+app.get('/mainMenuPage.ejs', function (req, res) {
     //set user ID
     if(!req.session.userID){
         // req.session.userID = Math.floor((Math.random() * 1000) + 1).toString();//should be random ID
@@ -20,7 +25,7 @@ router.get('/', function (req, res) {
 });
 
 //POST
-router.post('/', function (req, res) {
+app.post('/mainMenuPage.ejs', function (req, res) {
     //set username
     // req.session.username = req.body.username;
 
@@ -64,4 +69,4 @@ function sortUsersByWins(users){
     return users;
 }
 
-module.exports = router;
+// module.exports = router;
