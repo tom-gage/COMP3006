@@ -15,7 +15,10 @@ async function initDBConnection() {
         losses:Number
     });
 
-    User = mongoose.model('Users', userSchema);
+    if(!User){
+        User = mongoose.model('Users', userSchema);
+    }
+
 
     try{
         await mongoose.connect(dbUrl, {useUnifiedTopology: true, useNewUrlParser: true}).then(function () {
