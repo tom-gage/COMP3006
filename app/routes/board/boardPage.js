@@ -12,7 +12,7 @@ let playerInQuestion;
 
 //GET, join game
 app.get('/boardPage.ejs', function (req, res) {
-    console.log('- - - - JOIN GAME REQUEST RECEIVED - - - -');
+    // console.log('- - - - JOIN GAME REQUEST RECEIVED - - - -');
 
     let game = joinActiveGame(req, res);
 
@@ -31,21 +31,26 @@ app.get('/boardPage.ejs', function (req, res) {
 
 //POST, create game
 app.post('/boardPage.ejs', function (req, res) {
-    let game;
+    let game = null;
 
     if(req.body.requestedAction === 'createGame'){//if create game
-        console.log('- - - - CREATE GAME REQUEST RECEIVED - - - -');
+        // console.log('- - - - CREATE GAME REQUEST RECEIVED - - - -');
         game = createNewActiveGame(req, res);
         console.log('CREATED GAME OBJECT = ' + game);
     }
 
-    //serve page
-    res.render('boardPage.ejs', {
-        gameCode : game.code,
-        player1ID : game.player1ID,
-        player2ID : game.player2ID,
-        thisPlayerID : playerInQuestion
-    });
+    if(game){
+        //serve page
+        res.render('boardPage.ejs', {
+            gameCode : game.code,
+            player1ID : game.player1ID,
+            player2ID : game.player2ID,
+            thisPlayerID : playerInQuestion
+        });
+    } else {
+        res.render('../gameNotFound.ejs');
+    }
+
 
 });
 
@@ -76,12 +81,19 @@ function joinActiveGame(req, res){
     let targetGame = null;
 
     ACTIVE_GAMES.forEach(function (game, index) {//for each game in ACTIVE_GAMES
-        console.log('GAME CODE: ' + game.code);
-        console.log('SEARCH GAME CODE: ' + req.query.gameCode);
-        console.log('Joining players ID: ' + game.player2ID);
+        // console.log('GAME CODE: ' + game.code);
+        // console.log('SEARCH GAME CODE: ' + req.query.gameCode);
+        // console.log('Joining players ID: ' + game.player2ID);
 
         let activeGame = game;
         let searchGameCode = req.query.gameCode;
+
+        if(!activeGame){
+            return null;
+        }
+        if(!searchGameCode){
+            return null;
+        }
 
         if(activeGame.code.toString() === searchGameCode.toString()){//if there's an active game with a code matching the submitted code
             if(game.player1ID === req.session.userID){//if player is already in game as player 1, prevents player1 joining their own game

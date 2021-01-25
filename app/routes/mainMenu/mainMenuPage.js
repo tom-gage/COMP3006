@@ -15,9 +15,9 @@ app.get('/mainMenuPage.ejs', function (req, res) {
 
         req.session.username = '';
     }
-
-    req.session.viewCount += 1;
-    // console.log("cookies: " + req.session.viewCount);
+    //
+    // req.session.viewCount += 1;
+    // // console.log("cookies: " + req.session.viewCount);
 
     res.render('mainMenuPage.ejs', {
         highScoresList : getHighScoresList()
@@ -26,8 +26,13 @@ app.get('/mainMenuPage.ejs', function (req, res) {
 
 //POST
 app.post('/mainMenuPage.ejs', function (req, res) {
-    //set username
-    // req.session.username = req.body.username;
+    //set user ID
+    if(!req.session.userID){
+        // req.session.userID = Math.floor((Math.random() * 1000) + 1).toString();//should be random ID
+        req.session.userID = 'U_' + Math.random().toString(36).substr(2, 9);
+
+        req.session.username = '';
+    }
 
     res.render('mainMenuPage.ejs', {
         highScoresList : getHighScoresList()

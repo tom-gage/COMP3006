@@ -1,16 +1,16 @@
 class ActiveGame{
     Tile = require('./Tile');
+    //game vars
+    code = '';
+    player1ID = '';
+    player2ID = '';
 
     //ws vars
     player1SocketID = '';
     player2SocketID = '';
 
+    //messages
     messages = [];
-
-    //game vars
-    code = '';
-    player1ID = '';
-    player2ID = '';
 
     //game conditions
     gameOver = false;
@@ -22,7 +22,7 @@ class ActiveGame{
     makingAMultiCapturePlay = false;
     checkerInPlay = null;
 
-    //board vars
+    //board
     numberOfCols = 8;
     boardState;
     row0;

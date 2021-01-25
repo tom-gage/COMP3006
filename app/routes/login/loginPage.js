@@ -10,7 +10,6 @@ app.use(express.static(path.join(__dirname, '../../statics')));//nb: makes stati
 
 //GET
 app.get('/loginPage.ejs', function (req, res) {
-    console.log('got login page');
     res.render('loginPage.ejs',{});
 });
 
@@ -82,7 +81,7 @@ function handleRegistration(req, res){
 
 
 function login(req, res) {
-    console.log('login success');
+    // console.log('login success');
     req.session.userID = req.body.username;//set username to be session id
     // ACTIVE_USERS.push({username : req.body.username});
     res.redirect('mainMenuPage.ejs');

@@ -52,13 +52,11 @@ app.get('*', function (request, response) {
 //setup server
 let server = http.createServer(app);
 
-//setup sockets
+//setup socket
 let io = socketIo(server);
-
 io.on('connection', async function(socket) {
     console.log('connection...');
     require('./app/ws/WS')(socket, io);
-
 });
 
 server.listen(9000, function (request, response) {
