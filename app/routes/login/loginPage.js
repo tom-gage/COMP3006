@@ -17,14 +17,23 @@ app.get('/loginPage.ejs', function (req, res) {
 app.post('/loginPage.ejs', async function (req, res) {
     console.log('login page request of type...');
     let requestedAction = req.body.requestedAction;
+    console.log(requestedAction);
 
     if(requestedAction === 'login'){
-        console.log('login');
         handleLogin(req, res);
 
     } else if(requestedAction === 'register'){
-        console.log('register');
         handleRegistration(req, res);
+
+    } else if(requestedAction === 'editUsername'){
+        handleEditUsernameRequest(req, res);
+
+    } else if(requestedAction === 'editPassword'){
+        handleEditPasswordRequest(req, res);
+
+    } else if(requestedAction === 'deleteAccount'){
+        handleDeleteAccountRequest(req, res);
+
     }
 });
 
@@ -79,6 +88,21 @@ function handleRegistration(req, res){
     }
 }
 
+function handleEditUsernameRequest(req, res) {
+
+}
+
+function handleEditPasswordRequest(req, res) {
+
+}
+
+function handleDeleteAccountRequest(req, res){
+
+}
+
+function logOut(req, res){
+
+}
 
 function login(req, res) {
     // console.log('login success');
@@ -86,5 +110,3 @@ function login(req, res) {
     // ACTIVE_USERS.push({username : req.body.username});
     res.redirect('mainMenuPage.ejs');
 }
-
-// module.exports = router;

@@ -16,7 +16,7 @@ describe('hooks', function () {
                 }
                 assert.equal(isConnected, true);
             });
-        })
+        });
     });
 
     describe('DB.getUserModel()', async function () {
@@ -24,7 +24,7 @@ describe('hooks', function () {
             const result = await DB.getUserModel();
 
             assert.equal(typeof result, 'function');
-        })
+        });
     });
 
 

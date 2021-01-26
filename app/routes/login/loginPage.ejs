@@ -12,10 +12,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <!--
-    I know this is just a test page but we should really be putting our
-    js in a separate file. Shame on us.
-    -->
 
 </head>
 
@@ -77,15 +73,45 @@
     <br>
 
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-6">
+            <form action="loginPage.ejs" method="post">
+                <h4>Welcome, Username</h4>
+                <h6>Edit your details here</h6>
+                <input type="hidden" name="requestedAction" value="editUsername">
 
+                <div class="form-group">
+                    <label for="currentUsername">Username</label>
+                    <input type="text" class="form-control centre" id="currentUsername" name="currentUsername" value="username here" style="width: 50%;">
+                </div>
+                <input type="submit" value="Edit Username" class="btn btn-outline-success">
+            </form>
+
+            <form action="loginPage.ejs" method="post">
+                <input type="hidden" name="requestedAction" value="editPassword">
+
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" class="form-control centre" id="currentPassword" name="currentPassword" value="" style="width: 50%;">
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" class="form-control centre" id="newPassword" name="newPassword" value="" style="width: 50%;">
+                </div>
+
+                <input type="submit" value="Edit Password" class="btn btn-outline-success">
+            </form>
+
+            <br>
+
+            <form action="loginPage.ejs" method="post">
+                <input type="hidden" name="requestedAction" value="deleteAccount">
+
+                <input type="submit" value="DELETE ACCOUNT" class="btn btn-outline-danger">
+            </form>
         </div>
 
-        <div class="col-md-4">
-
-        </div>
-
-        <div class="col-md-4">
+        <div class="col-md-6">
 
         </div>
     </div>

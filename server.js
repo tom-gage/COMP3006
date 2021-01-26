@@ -4,7 +4,10 @@ let bodyParser = require('body-parser');
 let session = require('express-session');
 let socketIo = require('socket.io');
 
-// let mongoose = require('mongoose');
+let loginRoute = require('./app/routes/login/loginPage');
+let mainMenuRoute = require('./app/routes/mainMenu/mainMenuPage');
+let boardPageRoute = require('./app/routes/board/boardPage');
+
 let DB = require('./app/db/DB');
 
 let express = require("express");
@@ -31,36 +34,33 @@ app.use(session({
 }));
 
 
-//routes
+//set up routes
 //login
-let loginRoute = require('./app/routes/login/loginPage');
-// app.use('/loginPage.ejs', loginRoute);
 app.use(loginRoute);
 
 //main menu
-let mainMenuRoute = require('./app/routes/mainMenu/mainMenuPage');
 app.use(mainMenuRoute);
 
 //board page
-let boardPageRoute = require('./app/routes/board/boardPage');
 app.use(boardPageRoute);
 
 app.get('*', function (request, response) {
     response.send('404 page not found >.<');
 });
 
-//setup server
+//create server
 let server = http.createServer(app);
 
 //setup socket
 let io = socketIo(server);
 io.on('connection', async function(socket) {
-    console.log('connection...');
     require('./app/ws/WS')(socket, io);
 });
+
 
 server.listen(9000, function (request, response) {
     console.log('listening on port 9000');
 });
+
 
 module.exports = app;

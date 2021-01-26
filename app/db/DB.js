@@ -5,8 +5,6 @@ let User;
 async function initDBConnection() {
 
     let dbUrl = "mongodb+srv://barnaby:admin@cluster0.3qn4a.mongodb.net/myDatabase?retryWrites=true&w=majority";
-    // dbUrl = "ass";
-
 
     let userSchema = mongoose.Schema({
         username:String,
@@ -45,6 +43,4 @@ function getUserModel() {
 module.exports = {
     initDBConnection,
     getUserModel
-    // updateUser,
-    // getUsers
 };
