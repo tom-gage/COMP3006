@@ -8,9 +8,13 @@ app.set('views', __dirname);
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, '../../statics')));//nb: makes statics dir available to server
 
+
+
 //GET
 app.get('/loginPage.ejs', function (req, res) {
-    res.render('loginPage.ejs',{});
+    res.render('loginPage.ejs',{
+        username : req.session.userID
+    });
 });
 
 //POST
@@ -26,13 +30,13 @@ app.post('/loginPage.ejs', async function (req, res) {
         handleRegistration(req, res);
 
     } else if(requestedAction === 'editUsername'){
-        handleEditUsernameRequest(req, res);
+        await handleEditUsernameRequest(req, res);
 
     } else if(requestedAction === 'editPassword'){
-        handleEditPasswordRequest(req, res);
+        await handleEditPasswordRequest(req, res);
 
     } else if(requestedAction === 'deleteAccount'){
-        handleDeleteAccountRequest(req, res);
+        await handleDeleteAccountRequest(req, res);
 
     }
 });
@@ -88,16 +92,96 @@ function handleRegistration(req, res){
     }
 }
 
-function handleEditUsernameRequest(req, res) {
+async function handleEditUsernameRequest(req, res) {
+    console.log('editing username...');
+    let UsersModel = DB.getUserModel();
+
+    let username = req.session.userID;
+    let newUsername = req.body.newUsername;
+
+
+
+    let user = USERS.find(function (user, index) {
+        return user.username.toString() === newUsername.toString();
+    });
+
+    console.log(username);
+    console.log(newUsername);
+    console.log(JSON.stringify(user));
+
+    if(!user && newUsername){
+        await UsersModel.findOneAndUpdate(
+            {
+                username : username
+            },
+            {
+                username: newUsername
+            });
+
+
+        await UsersModel.find({}, function (err, users) {
+            global.USERS = users;
+        });
+
+        req.session.userID = newUsername;
+
+        res.render('loginPage.ejs', {
+            username : req.session.userID
+        });
+    } else {
+        res.render('loginPage.ejs', {
+            username : req.session.userID
+        });
+    }
+}
+
+async function handleEditPasswordRequest(req, res) {
+    console.log('editing password...');
+    let UsersModel = DB.getUserModel();
+
+    let username = req.session.userID;
+
+    let currentPassword = req.body.currentPassword;
+    let newPassword = req.body.newPassword;
+
+    if(newPassword){
+        await UsersModel.findOneAndUpdate(
+            {
+                username : username,
+                password : currentPassword
+            },
+            {
+                password: newPassword
+            });
+
+
+        await UsersModel.find({}, function (err, users) {
+            global.USERS = users;
+        });
+
+        res.render('loginPage.ejs', {
+            username : req.session.userID
+        });
+    } else {
+        res.render('loginPage.ejs', {
+            username : req.session.userID
+        });
+    }
 
 }
 
-function handleEditPasswordRequest(req, res) {
 
-}
 
-function handleDeleteAccountRequest(req, res){
 
+async function handleDeleteAccountRequest(req, res){
+    let UsersModel = DB.getUserModel();
+    let username = req.session.userID;
+    await UsersModel.deleteOne({ username: username });
+    await UsersModel.find({}, function (err, users) {
+        global.USERS = users;
+    });
+    req.session.userID = null;
+    res.redirect('mainMenuPage.ejs');
 }
 
 function logOut(req, res){
@@ -108,5 +192,7 @@ function login(req, res) {
     // console.log('login success');
     req.session.userID = req.body.username;//set username to be session id
     // ACTIVE_USERS.push({username : req.body.username});
-    res.redirect('mainMenuPage.ejs');
+    res.render('loginPage.ejs', {
+        username : req.session.userID
+    });
 }
