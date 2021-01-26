@@ -6,6 +6,10 @@ div.dot{
     display: block;
 }
 
+.smallText{
+    font-size: 80%;
+}
+
 .centre {
     margin: auto;
     width: 50%;

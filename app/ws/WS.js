@@ -2,7 +2,6 @@ let DB = require('../db/DB');
 let User = DB.getUserModel();
 
 module.exports = function(socket, io) {
-
     //on connection
     console.log("Websocket connection established...");
 
@@ -37,14 +36,7 @@ module.exports = function(socket, io) {
         console.log('Got disconnect!');
 
         pruneEmptyActiveGames(findActiveGameByWSID(socket.id), socket.id);
-
     });
-
-
-
-
-
-
 
     //functions
     function handleMessage(message){
@@ -53,7 +45,6 @@ module.exports = function(socket, io) {
             targetGame.messages.push(message.playerID + ': ' + message.messageBody);
             sendEventToPlayers(targetGame, 'updateMessages', JSON.stringify(targetGame.messages));
         }
-
     }
 
     async function handleMoveRequest(moveRequest){
@@ -107,7 +98,6 @@ module.exports = function(socket, io) {
                 targetGame.player2SocketID = joinRequest.socketID;
             }
 
-            updateActiveGame(targetGame);
             console.log('sending initial board update...');
             sendEventToPlayers(targetGame, 'updateBoard', targetGame.getBoardStateAsHTML());
             sendEventToPlayers(targetGame, 'updateMessages', JSON.stringify(targetGame.messages));
@@ -118,8 +108,10 @@ module.exports = function(socket, io) {
         if(targetGame){//if target game exists
             if (targetGame.player1SocketID === WSID){
                 targetGame.player1SocketID = '';
+                targetGame.player1ID = '';
             } else if(targetGame.player2SocketID === WSID){//if disconnecting websocket id matches a player's websocket id, prune it
                 targetGame.player2SocketID = '';
+                targetGame.player2ID = '';
             }
 
             if(targetGame.player1SocketID === '' && targetGame.player2SocketID === ''){//if game has no players, delete it

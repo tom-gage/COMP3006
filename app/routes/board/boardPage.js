@@ -12,7 +12,7 @@ let playerInQuestion;
 
 //GET, join game
 app.get('/boardPage.ejs', function (req, res) {
-    // console.log('- - - - JOIN GAME REQUEST RECEIVED - - - -');
+    console.log('- - - - JOIN GAME REQUEST RECEIVED - - - -');
 
     let game = joinActiveGame(req, res);
 
@@ -34,7 +34,7 @@ app.post('/boardPage.ejs', function (req, res) {
     let game = null;
 
     if(req.body.requestedAction === 'createGame'){//if create game
-        // console.log('- - - - CREATE GAME REQUEST RECEIVED - - - -');
+        console.log('- - - - CREATE GAME REQUEST RECEIVED - - - -');
         game = createNewActiveGame(req, res);
         console.log('CREATED GAME OBJECT = ' + game);
     }
@@ -67,7 +67,7 @@ function createNewActiveGame(req, res){
         player1ID = req.session.userID;
     }
 
-    let newGame = new ActiveGame(gameCode, player1ID, 'Not here yet');
+    let newGame = new ActiveGame(gameCode, player1ID, '');
     playerInQuestion = newGame.player1ID;
 
     ACTIVE_GAMES.push(newGame);
@@ -81,9 +81,9 @@ function joinActiveGame(req, res){
     let targetGame = null;
 
     ACTIVE_GAMES.forEach(function (game, index) {//for each game in ACTIVE_GAMES
-        // console.log('GAME CODE: ' + game.code);
-        // console.log('SEARCH GAME CODE: ' + req.query.gameCode);
-        // console.log('Joining players ID: ' + game.player2ID);
+        console.log('GAME CODE: ' + game.code);
+        console.log('SEARCH GAME CODE: ' + req.query.gameCode);
+        console.log('Joining players ID: ' + req.session.userID);
 
         let activeGame = game;
         let searchGameCode = req.query.gameCode;
@@ -106,12 +106,19 @@ function joinActiveGame(req, res){
 
                 playerInQuestion = game.player2ID;
                 targetGame = game;
-            } else if(game.player2ID === 'Not here yet'){//if game has space, add player2 to game, update ACTIVE_GAMES
+            } else if(game.player2ID === ''){//if game has space, add player2 to game, update ACTIVE_GAMES
                 console.log('JOIN GAME CONDITION, game has space');
                 game.player2ID = req.session.userID;//add player2
                 ACTIVE_GAMES.splice(index, 1, game);//at current index: delete game, replace with updated game
 
                 playerInQuestion = game.player2ID;
+                targetGame = game;
+            } else if(game.player1ID === ''){//if game has space, add player1 to game, update ACTIVE_GAMES
+                console.log('JOIN GAME CONDITION, game has space');
+                game.player1ID = req.session.userID;//add player1
+                ACTIVE_GAMES.splice(index, 1, game);//at current index: delete game, replace with updated game
+
+                playerInQuestion = game.player1ID;
                 targetGame = game;
             }
         }
