@@ -13,7 +13,8 @@ app.use(express.static(path.join(__dirname, '../../statics')));//nb: makes stati
 //GET
 app.get('/loginPage.ejs', function (req, res) {
     res.render('loginPage.ejs',{
-        username : req.session.userID
+        username : req.session.userID,
+        feedback : ''
     });
 });
 
@@ -53,12 +54,18 @@ function handleLogin(req, res){
         }
         else {
             console.log('login failure');
-            res.redirect('loginPage.ejs');//no login
+            res.render('loginPage.ejs',{
+                username : req.session.userID,
+                feedback : 'Login failed!'
+            });
         }
     }
     else {
         console.log('login failure');
-        res.redirect('loginPage.ejs');//no login
+        res.render('loginPage.ejs',{
+            username : req.session.userID,
+            feedback : 'Login failed!'
+        });
     }
 }
 
@@ -71,7 +78,10 @@ function handleRegistration(req, res){
         return user.username === username;
     })){
         console.log('registration failure');
-        res.redirect('loginPage.ejs');//no login
+        res.render('loginPage.ejs',{
+            username : req.session.userID,
+            feedback : 'Registration failed!'
+        });
     } else {
         console.log('registration success');
         let newUser = {
@@ -126,11 +136,13 @@ async function handleEditUsernameRequest(req, res) {
         req.session.userID = newUsername;
 
         res.render('loginPage.ejs', {
-            username : req.session.userID
+            username : req.session.userID,
+            feedback : 'Username changed to ' + req.session.userID
         });
     } else {
         res.render('loginPage.ejs', {
-            username : req.session.userID
+            username : req.session.userID,
+            feedback : 'Username change failed!'
         });
     }
 }
@@ -160,11 +172,13 @@ async function handleEditPasswordRequest(req, res) {
         });
 
         res.render('loginPage.ejs', {
-            username : req.session.userID
+            username : req.session.userID,
+            feedback : 'Password changed!'
         });
     } else {
         res.render('loginPage.ejs', {
-            username : req.session.userID
+            username : req.session.userID,
+            feedback : 'Password change failed!'
         });
     }
 
@@ -184,15 +198,12 @@ async function handleDeleteAccountRequest(req, res){
     res.redirect('mainMenuPage.ejs');
 }
 
-function logOut(req, res){
-
-}
 
 function login(req, res) {
     // console.log('login success');
     req.session.userID = req.body.username;//set username to be session id
-    // ACTIVE_USERS.push({username : req.body.username});
     res.render('loginPage.ejs', {
-        username : req.session.userID
+        username : req.session.userID,
+        feedback : 'Logged in!'
     });
 }
