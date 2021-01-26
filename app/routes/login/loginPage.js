@@ -39,6 +39,8 @@ app.post('/loginPage.ejs', async function (req, res) {
     } else if(requestedAction === 'deleteAccount'){
         await handleDeleteAccountRequest(req, res);
 
+    } else if(requestedAction === 'logOut'){
+        logOut(req, res);
     }
 });
 
@@ -206,4 +208,9 @@ function login(req, res) {
         username : req.session.userID,
         feedback : 'Logged in!'
     });
+}
+
+function logOut(req, res) {
+    req.session.userID = null;
+    res.redirect('mainMenuPage.ejs');
 }
