@@ -29,19 +29,19 @@ describe('hooks', function () {
                 .send({ requestedAction: 'createGame'})
                 .type('form')
                 .expect(200)
-                .expect(/board page reached/, done)
+                .expect(/board page/, done)
         })
     });
 
     describe('BoardPageRoute GET', function () {
         it('user attempts to join a game that exists', function (done) {
-            ACTIVE_GAMES.push(new ActiveGame(100, 'p1', 'Not here yet'));
+            ACTIVE_GAMES.push(new ActiveGame(100, 'p1', ''));
 
             request(server)
                 .get('/boardPage.ejs')
                 .query({ gameCode: 100})
                 .expect(200)
-                .expect(/board page reached!/, done)
+                .expect(/board page/, done)
 
         })
     });

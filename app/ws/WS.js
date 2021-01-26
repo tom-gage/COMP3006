@@ -115,7 +115,7 @@ module.exports = function(socket, io) {
             }
 
             if(targetGame.player1SocketID === '' && targetGame.player2SocketID === ''){//if game has no players, delete it
-                updateActiveGame(targetGame, 'delete');
+                deleteActiveGame(targetGame);
             }
         }
     }
@@ -142,15 +142,10 @@ module.exports = function(socket, io) {
         return targetGame;
     }
 
-    function updateActiveGame(updateGame, action){//THIS IS ONLY BEING USED FOR DELETING, NEEDS A REFACTOR METHINKS
-        console.log('updating ACTIVE_GAMES...');
+    function deleteActiveGame(updateGame){
         ACTIVE_GAMES.forEach(function (activeGame, index) {//for each game in ACTIVE_GAMES
             if(activeGame.code.toString() === updateGame.code.toString()){//if there's an active game with a code matching the submitted code
-                ACTIVE_GAMES.splice(index, 1, updateGame);//at current index: delete game, replace with updated game
-                // console.log('active game updated! game code is: ' + updateGame.code);
-                if(action === 'delete'){
-                    ACTIVE_GAMES.splice(index, 1);
-                }
+                ACTIVE_GAMES.splice(index, 1);
             }
         });
     }

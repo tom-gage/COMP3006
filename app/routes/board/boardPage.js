@@ -12,7 +12,7 @@ let playerInQuestion;
 
 //GET, join game
 app.get('/boardPage.ejs', function (req, res) {
-    console.log('- - - - JOIN GAME REQUEST RECEIVED - - - -');
+    // console.log('- - - - JOIN GAME REQUEST RECEIVED - - - -');
 
     let game = joinActiveGame(req, res);
 
@@ -34,7 +34,7 @@ app.post('/boardPage.ejs', function (req, res) {
     let game = null;
 
     if(req.body.requestedAction === 'createGame'){//if create game
-        console.log('- - - - CREATE GAME REQUEST RECEIVED - - - -');
+        // console.log('- - - - CREATE GAME REQUEST RECEIVED - - - -');
         game = createNewActiveGame(req, res);
         console.log('CREATED GAME OBJECT = ' + game);
     }
@@ -81,9 +81,9 @@ function joinActiveGame(req, res){
     let targetGame = null;
 
     ACTIVE_GAMES.forEach(function (game, index) {//for each game in ACTIVE_GAMES
-        console.log('GAME CODE: ' + game.code);
-        console.log('SEARCH GAME CODE: ' + req.query.gameCode);
-        console.log('Joining players ID: ' + req.session.userID);
+        // console.log('GAME CODE: ' + game.code);
+        // console.log('SEARCH GAME CODE: ' + req.query.gameCode);
+        // console.log('Joining players ID: ' + req.session.userID);
 
         let activeGame = game;
         let searchGameCode = req.query.gameCode;
