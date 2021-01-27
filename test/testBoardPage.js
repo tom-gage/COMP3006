@@ -11,9 +11,6 @@ describe('hooks', function () {
 
     });
 
-    after(function () {
-        // server.stop();
-    });
 
     describe('BoardPageRoute GET', function () {
         it('user attempts to join a game that doesnt exist', function (done) {

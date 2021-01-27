@@ -8,10 +8,6 @@ describe('hooks', function () {
 
     });
 
-    after(function () {
-        DB.closeConnection();
-    });
-
     describe('DB.initDBConnection()', async function () {
         it('should return true if successful connection attempt to database is made, else return false', async function () {
             let isConnected = DB.initDBConnection().then(function (isConnected, err) {

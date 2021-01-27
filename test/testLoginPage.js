@@ -12,10 +12,6 @@ describe('hooks', function () {
 
     });
 
-    after(function () {
-        DB.closeConnection();
-    });
-
     describe('LoginPageRoute GET', function () {
         it('serves the user the login page', function (done) {
             request(server)
