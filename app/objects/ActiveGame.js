@@ -44,28 +44,28 @@ class ActiveGame{
         this.initialiseBoardState();
     }
 
-    makeMove(currentPos, requestedPos, currentPlayerID){
+    makeMove(currentPos, requestedPos, currentPlayerID){//receive move proposal
         currentPos = this.parsePosition(currentPos);
-        requestedPos = this.parsePosition(requestedPos);
+        requestedPos = this.parsePosition(requestedPos);//parse position into workable object
 
         let startingTile = this.getTileByPosition(currentPos);
         let endingTile = this.getTileByPosition(requestedPos);
 
         //begin move validation
         if(this.validateGameConditions(currentPos, requestedPos, currentPlayerID)){//if game conditions are valid
-
+            //assuming valid game conditions, move can be either travelling move, attacking move or a chained-attacking move
             if(this.makingAMultiCapturePlay){//if making a multi capture play
-                console.log('attempting multi-capture play...');
+                // console.log('attempting multi-capture play...');
                 if(startingTile.getCheckerID() === this.checkerInPlay.id){//if checker is same checker used in previous play
 
                     if(this.validateAttackingMove(currentPos, requestedPos)){//if proposed move is a valid attacking play
-                        this.doAttackingMove(currentPos, requestedPos);//do move
+                        this.doAttackingMove(currentPos, requestedPos);//do attacking move
                         this.makeKings();
 
-                        console.log('SUCCESS!');
-                        console.log('LOOKING FOR ANOTHER MULTI CAPTURE PLAY...');
-                        if(this.canMakeValidAttackingMove(requestedPos)){
-                            console.log('ANOTHER MULTI CAPTURE PLAY AVAILABLE');
+                        // console.log('SUCCESS!');
+                        // console.log('LOOKING FOR ANOTHER MULTI CAPTURE PLAY...');
+                        if(this.canMakeValidAttackingMove(requestedPos)){//look for another attacking play...
+                            // console.log('ANOTHER MULTI CAPTURE PLAY AVAILABLE');
 
                             this.checkerInPlay = endingTile.checker;
                             this.makingAMultiCapturePlay = true;
@@ -78,7 +78,7 @@ class ActiveGame{
                 }
 
             } else if(this.validateTravelingMove(currentPos, requestedPos)){//if making a travelling move
-                //do travel
+                //do traveling move
                 this.doTravelingMove(currentPos, requestedPos);
                 this.switchCurrentTurn();
 
@@ -87,12 +87,12 @@ class ActiveGame{
                 this.doAttackingMove(currentPos, requestedPos);
                 this.makeKings();
 
-                console.log('LOOKING FOR MULTI CAPTURE PLAY...');
+                // console.log('LOOKING FOR MULTI CAPTURE PLAY...');
                 if(this.canMakeValidAttackingMove(requestedPos)){
-                    console.log('MULTI CAPTURE PLAY AVAILABLE');
+                    // console.log('MULTI CAPTURE PLAY AVAILABLE');
 
                     this.checkerInPlay = endingTile.checker;
-                    console.log('initialising checker in play: ' + JSON.stringify(this.checkerInPlay));
+                    // console.log('initialising checker in play: ' + JSON.stringify(this.checkerInPlay));
                     this.makingAMultiCapturePlay = true;
                 } else {
                     this.checkerInPlay = null;
@@ -132,37 +132,34 @@ class ActiveGame{
         } else {
             return null;
         }
-
-
     }
 
     validateGameConditions(currentPos, requestedPos, currentPlayerID){
         let startingTile = this.getTileByPosition(currentPos);
 
-        if(this.gameOver){
-            console.log('move INVALID, game is over');
+        if(this.gameOver){//if game is over
+            // console.log('move INVALID, game is over');
             return false;
         }
 
-        if(!startingTile){
-            console.log('move INVALID, starting tile is null');
+        if(!startingTile){//if starting tile invalid
+            // console.log('move INVALID, starting tile is null');
             return false;
         }
 
-        // remove this for easier debugging
-        if(this.currentTurn === 'red' && currentPlayerID !== this.player1ID){
-            console.log('move INVALID, not your turn');
+        if(this.currentTurn === 'red' && currentPlayerID !== this.player1ID){//if not your turn
+            // console.log('move INVALID, not your turn');
             return false;
         } else if(this.currentTurn === 'blue' && currentPlayerID !== this.player2ID){
-            console.log('move INVALID, not your turn');
+            // console.log('move INVALID, not your turn');
             return false;
         }
 
-        if(this.currentTurn !== startingTile.getCheckerTeam()){
-            console.log('move INVALID, not your checker');
+        if(this.currentTurn !== startingTile.getCheckerTeam()){//if not your checker
+            // console.log('move INVALID, not your checker');
             return false;
         }
-        console.log('game conditions valid...');
+        // console.log('game conditions valid...');
         return true;
     }
 
@@ -174,24 +171,22 @@ class ActiveGame{
         console.log(JSON.stringify(endingTile));
 
         if(!startingTile || !endingTile){
-            console.log('Travelling move INVALID, starting/ending tile is null');
             return false;
         }
-
 
         let moveForwardYVal;
         let moveBackwardYVal;
         let moveLeftXVal;
         let moveRightXVal;
 
-        if(startingTile.getCheckerTeam() === 'red'){
+        if(startingTile.getCheckerTeam() === 'red'){//if red, set movement modifier relative to red's side
             moveForwardYVal = 1;
             moveBackwardYVal = -1;
 
             moveLeftXVal = 1;
             moveRightXVal = -1;
 
-        } else if(startingTile.getCheckerTeam() === 'blue'){
+        } else if(startingTile.getCheckerTeam() === 'blue'){//if blue, set movement modifier relative to blue's side
             moveForwardYVal = -1;
             moveBackwardYVal = 1;
 
@@ -200,13 +195,13 @@ class ActiveGame{
         }
 
         //begin checks
-        if(!startingTile.isOccupied()){
-            console.log('move INVALID, starting tile not occupied');
+        if(!startingTile.isOccupied()){//if starting tile not occupied
+            // console.log('move INVALID, starting tile not occupied');
             return false;
         }
 
-        if(endingTile.isOccupied()){
-            console.log('move INVALID, tile occupied');
+        if(endingTile.isOccupied()){//if ending tile is occupied
+            // console.log('move INVALID, tile occupied');
             return false;
         }
 
@@ -215,7 +210,7 @@ class ActiveGame{
                 y : currentPos.y + moveForwardYVal,
                 x : currentPos.x + moveLeftXVal
             }) :
-                console.log('VALID MOVE FORWARD LEFT');
+                // console.log('VALID MOVE FORWARD LEFT');
                 return true;
 
 
@@ -223,7 +218,7 @@ class ActiveGame{
                 y : currentPos.y + moveForwardYVal,
                 x : currentPos.x + moveRightXVal
             }) :
-                console.log('VALID MOVE FORWARD RIGHT');
+                // console.log('VALID MOVE FORWARD RIGHT');
                 return true;
 
 
@@ -233,7 +228,7 @@ class ActiveGame{
             }) :
 
                 if (startingTile.getCheckerKing()){//if checker is king
-                    console.log('VALID MOVE BACKWARD RIGHT');
+                    // console.log('VALID MOVE BACKWARD RIGHT');
                     return true;
                 }
                 break;
@@ -244,18 +239,18 @@ class ActiveGame{
                 x : currentPos.x + moveLeftXVal
             }) :
                 if (startingTile.getCheckerKing()){//if checker is king
-                    console.log('VALID MOVE BACKWARD LEFT');
+                    // console.log('VALID MOVE BACKWARD LEFT');
                     return true;
                 }
                 break;
 
 
             default:
-                console.log('VALIDATION DEFAULTED, TRAVELING MOVE INVALID');
+                // console.log('VALIDATION DEFAULTED, TRAVELING MOVE INVALID');
                 return false;
         }
 
-        console.log('TRAVELING MOVE INVALID');
+        // console.log('TRAVELING MOVE INVALID');
         return false;
     }
 
@@ -264,7 +259,7 @@ class ActiveGame{
         let endingTile = this.getTileByPosition(requestedPos);
 
         if(!startingTile || !endingTile){
-            console.log('Attacking move INVALID, starting/ending tile is null');
+            // console.log('Attacking move INVALID, starting/ending tile is null');
             return false;
         }
 
@@ -273,14 +268,14 @@ class ActiveGame{
         let attackLeftXVal;
         let attackRightXVal;
 
-        if(startingTile.getCheckerTeam() === 'red'){
+        if(startingTile.getCheckerTeam() === 'red'){//if red, set movement modifiers
             attackForwardYVal = 2;
             attackBackwardYVal = -2;
 
             attackLeftXVal = 2;
             attackRightXVal = -2;
 
-        } else if(startingTile.getCheckerTeam() === 'blue'){
+        } else if(startingTile.getCheckerTeam() === 'blue'){//if blue, set movement modifiers
             attackForwardYVal = -2;
             attackBackwardYVal = 2;
 
@@ -292,12 +287,12 @@ class ActiveGame{
 
         //begin checks
         if(!startingTile.isOccupied()){
-            console.log('move INVALID, starting tile not occupied');
+            // console.log('move INVALID, starting tile not occupied');
             return false;
         }
 
         if(endingTile.isOccupied()){
-            console.log('move INVALID, ending tile occupied');
+            // console.log('move INVALID, ending tile occupied');
             return false;
         }
 
@@ -308,8 +303,8 @@ class ActiveGame{
             }) :
                     tileBeingCaptured = this.boardState[currentPos.y + (attackForwardYVal / 2)][currentPos.x + (attackLeftXVal / 2)];
 
-                    if (tileBeingCaptured.getCheckerTeam() === this.nextTurn) {
-                        console.log('VALID ATTACK FORWARD LEFT');
+                    if (tileBeingCaptured.getCheckerTeam() === this.nextTurn) {//if captured piece on opposite team
+                        // console.log('VALID ATTACK FORWARD LEFT');
 
                         return true;
                     }
@@ -322,8 +317,8 @@ class ActiveGame{
             }) :
                     tileBeingCaptured = this.boardState[currentPos.y + (attackForwardYVal / 2)][currentPos.x + (attackRightXVal / 2)];
 
-                    if (tileBeingCaptured.getCheckerTeam() === this.nextTurn) {
-                        console.log('VALID ATTACK FORWARD RIGHT');
+                    if (tileBeingCaptured.getCheckerTeam() === this.nextTurn) {//if captured piece on opposite team
+                        // console.log('VALID ATTACK FORWARD RIGHT');
                         return true;
                     }
                 break;
@@ -336,8 +331,8 @@ class ActiveGame{
 
                 if (startingTile.getCheckerKing()) {//if checker is king
                     tileBeingCaptured = this.boardState[currentPos.y + (attackBackwardYVal / 2)][currentPos.x + (attackRightXVal / 2)];
-                    if (tileBeingCaptured.getCheckerTeam() === this.nextTurn) {
-                        console.log('VALID ATTACK BACKWARD RIGHT');
+                    if (tileBeingCaptured.getCheckerTeam() === this.nextTurn) {//if captured piece on opposite team
+                        // console.log('VALID ATTACK BACKWARD RIGHT');
                         return true;
                     }
                 }
@@ -352,24 +347,24 @@ class ActiveGame{
                 if (startingTile.getCheckerKing()) {//if checker is king
                     tileBeingCaptured = this.boardState[currentPos.y + (attackBackwardYVal / 2)][currentPos.x + (attackLeftXVal / 2)];
 
-                    if (tileBeingCaptured.getCheckerTeam() === this.nextTurn) {
-                        console.log('VALID ATTACK BACKWARD LEFT');
+                    if (tileBeingCaptured.getCheckerTeam() === this.nextTurn) {//if captured piece on opposite team
+                        // console.log('VALID ATTACK BACKWARD LEFT');
                         return true;
                     }
                 }
                 break;
 
             default:
-                console.log('PROPOSED ATTACKING MOVE ILLEGAL');
+                // console.log('PROPOSED ATTACKING MOVE ILLEGAL');
                 return false;
         }
 
-        console.log('PROPOSED ATTACKING MOVE: y:' + requestedPos.y + ', x:' + requestedPos.x + ' INVALID');
+        // console.log('PROPOSED ATTACKING MOVE: y:' + requestedPos.y + ', x:' + requestedPos.x + ' INVALID');
         return false;
     }
 
     canMakeValidAttackingMove(currentPos){//if checker can make valid attack, return true
-        console.log('Checking for valid attacking moves... ');
+        // console.log('Checking for valid attacking moves... ');
 
         let yArray = [-2, -2, 2 ,2];
         let xArray = [-2, 2, 2, -2];
@@ -381,16 +376,16 @@ class ActiveGame{
             };
 
             if(this.validateAttackingMove(currentPos, potentiallyAttackablePosition)){//check if its valid
-                console.log('valid attacking move found!');
+                // console.log('valid attacking move found!');
                 return true;
             }
         }
-        console.log('NO valid attacking moves found');
+        // console.log('NO valid attacking moves found');
         return false;
     }
 
     doTravelingMove(currentPos, requestedPos){
-        console.log('Doing travelling move...');
+        // console.log('Doing travelling move...');
         let startingTile = this.getTileByPosition(currentPos);
         let endingTile = this.getTileByPosition(requestedPos);
 
@@ -399,7 +394,7 @@ class ActiveGame{
     }
 
     doAttackingMove(currentPos, requestedPos){
-        console.log('Doing attacking move...');
+        // console.log('Doing attacking move...');
         let startingTile = this.getTileByPosition(currentPos);
         let endingTile = this.getTileByPosition(requestedPos);
 
@@ -408,19 +403,17 @@ class ActiveGame{
         //then remove checker being captured
         this.boardState[Math.abs(currentPos.y - (currentPos.y - requestedPos.y) / 2)][Math.abs(currentPos.x - (currentPos.x - requestedPos.x) / 2)].removeChecker();
 
-        console.log('SEE HERE : ' + endingTile.getCheckerTeam());
-
         if(endingTile.getCheckerTeam() === 'red'){
-            console.log('player 1 score incremented');
+            // console.log('player 1 score incremented');
             this.player1Score += 1;
         } else if(endingTile.getCheckerTeam() === 'blue'){
-            console.log('player 2 score incremented');
+            // console.log('player 2 score incremented');
             this.player2Score += 1;
         }
     }
 
     getTileByPosition(position){
-        console.log('getting tile by position...');
+        // console.log('getting tile by position...');
         console.log(JSON.stringify(position));
 
         if(position){
@@ -429,7 +422,7 @@ class ActiveGame{
                 return this.boardState[position.y][position.x];//return tile
             } else {
                 // console.log('tile does not exist');
-                return null;
+                return null;//if not, return null
             }
         }
 
@@ -444,26 +437,26 @@ class ActiveGame{
 
         this.boardState[0].forEach(function (tile, index) {//for each tile on row 0
             if(tile.getCheckerTeam() === 'blue'){//if checker is blue, make checker king
-                console.log('made blue checker king at y: 0, x: ' + index );
+                // console.log('made blue checker king at y: 0, x: ' + index );
                 tile.makeCheckerKing();
             }
         });
 
         this.boardState[this.boardState.length - 1].forEach(function (tile, index) {//for each tile on row 7
             if(tile.getCheckerTeam() === 'red'){//if checker is red, make checker king
-                console.log('made red checker king at y: 7, x: ' + index);
+                // console.log('made red checker king at y: 7, x: ' + index);
                 tile.makeCheckerKing();
             }
         });
     }
 
     switchCurrentTurn(){
-        if(!this.makingAMultiCapturePlay){
-            if(this.currentTurn === 'red'){
+        if(!this.makingAMultiCapturePlay){//if not making multi cap play
+            if(this.currentTurn === 'red'){// if red, make blue
                 this.currentTurn = 'blue';
                 this.nextTurn = 'red';
 
-            } else if(this.currentTurn === 'blue'){
+            } else if(this.currentTurn === 'blue'){//if blue, make red
                 this.currentTurn = 'red';
                 this.nextTurn = 'blue';
             }
@@ -501,7 +494,7 @@ class ActiveGame{
         }
     }
 
-    initialiseBoardState(){
+    initialiseBoardState(){//sets up the board for play
         let tileIndex = 1;
         let redCheckerIDIndex = 0;
         let blueCheckerIDIndex = 0;
@@ -520,8 +513,8 @@ class ActiveGame{
 
         for(let y = 0; y < this.boardState.length; y++){//for each row in board
             tileIndex++;
-            for(let x = 0; x < this.numberOfCols; x++){//for each column/position in row
-                tile = new this.Tile().addCoodinateID(y, x);
+            for(let x = 0; x < this.numberOfCols; x++){//for each column/position in row,
+                tile = new this.Tile().addCoodinateID(y, x);//build tile
 
                 tileIndex++;
                 if(tileIndex & 1)//if tile index is odd
@@ -533,12 +526,12 @@ class ActiveGame{
                     tile.addColour('black');
 
                     if(y >= 0 && y <= 2){
-                        tile.addChecker(redCheckerIDIndex,'red');
+                        tile.addChecker(redCheckerIDIndex,'red');//build red checker
                         redCheckerIDIndex++;
                     }
 
                     if(y >= 5 && y <= this.boardState.length){
-                        tile.addChecker(blueCheckerIDIndex, 'blue');
+                        tile.addChecker(blueCheckerIDIndex, 'blue');//build blue checker
                         blueCheckerIDIndex++;
                     }
                 }
@@ -554,14 +547,14 @@ class ActiveGame{
         for(let y = 0; y < this.boardState.length; y++){//for each row in board
             boardStateAsHTML += '<br>';
             for(let x = 0; x < this.numberOfCols; x++){//for each column/position in row
-                boardStateAsHTML += this.boardState[y][x].getBoardTileAsHTML();
+                boardStateAsHTML += this.boardState[y][x].getBoardTileAsHTML();//get board tile as HTML, add to boardstateHTML
             }
         }
         boardStateAsHTML += '</div>';
         return boardStateAsHTML;
     }
 
-    getCurrentTurnAsHTML(){
+    getCurrentTurnAsHTML(){//returns current turn html
         let turnDisplay = '<p id="turnDisplay">';
 
         if(this.currentTurn === 'red'){
@@ -574,7 +567,7 @@ class ActiveGame{
         return turnDisplay;
     }
 
-    getScoresAsHTML(){
+    getScoresAsHTML(){//returns scores html
         let scores = '<p id="scores">';
         scores += 'Red Team: ' + this.player1Score + ' - Blue Team: ' + this.player2Score;
         scores += '</p>';
@@ -582,7 +575,7 @@ class ActiveGame{
         return scores;
     }
 
-    prettyPrintBoardState(){
+    prettyPrintBoardState(){//for debug
         console.log('Pretty printing the board state...');
         let columnsHeader = '[_]';
         let rowOut = '';
@@ -611,7 +604,7 @@ class ActiveGame{
         }
     }
 
-    initialiseBlankBoardState(){
+    initialiseBlankBoardState(){//for testing
         let tileIndex = 1;
         let tile;
 
@@ -648,7 +641,7 @@ class ActiveGame{
     }
 
 
-    initialiseCheatBoardState(){
+    initialiseCheatBoardState(){//for cheating
         let tileIndex = 1;
         let redCheckerIDIndex = 0;
         let blueCheckerIDIndex = 0;

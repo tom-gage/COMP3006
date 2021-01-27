@@ -4,7 +4,7 @@ let User;
 
 async function initDBConnection() {
 
-    let dbUrl = "mongodb+srv://barnaby:admin@cluster0.3qn4a.mongodb.net/myDatabase?retryWrites=true&w=majority";
+    let dbUrl = "mongodb+srv://barnaby:admin@cluster0.3qn4a.mongodb.net/myDatabase?retryWrites=true&w=majority";//figured it better to leave this in than have the app fail when reviewed
 
     let userSchema = mongoose.Schema({
         username:String,
@@ -13,28 +13,27 @@ async function initDBConnection() {
         losses:Number
     });
 
-    if(!User){
-        User = mongoose.model('Users', userSchema);
+    if(!User){//if User not initiated
+        User = mongoose.model('Users', userSchema);//initiate usre model
     }
 
-
     try{
-        await mongoose.connect(dbUrl, {useUnifiedTopology: true, useNewUrlParser: true}).then(function () {
+        await mongoose.connect(dbUrl, {useUnifiedTopology: true, useNewUrlParser: true}).then(function () {// connect to DB
             console.log('db initialised successfully');
             return true;
         });
 
     } catch (e) {
-        console.log('db connection failed!');
+        console.log('db connection failed!');//connection failed
         return false;
     }
 }
 
-async function closeConnection() {
+async function closeConnection() {// close connection
     mongoose.connection.close();
 }
 
-function getUserModel() {
+function getUserModel() { // get user model
     if(User){
         return User;
     }

@@ -3,19 +3,19 @@ let User = DB.getUserModel();
 
 module.exports = function(socket, io) {
     //on connection
-    console.log("Websocket connection established...");
+    // console.log("Websocket connection established...");
 
     //on join request
     socket.on('joinRequest', async function(msg) {
-        console.log('client join request received, id is: ' + msg);
+        // console.log('client join request received, id is: ' + msg);
 
         handleJoinRequest(JSON.parse(msg));
     });
 
     //on move request
     socket.on('moveRequest', async function (msg) {
-        console.log('move request received: ');
-        console.log(msg);
+        // console.log('move request received: ');
+        // console.log(msg);
 
         let moveRequest = JSON.parse(msg);
 
@@ -24,16 +24,17 @@ module.exports = function(socket, io) {
 
     //on message
     socket.on('sentMessage', async function (msg) {
-        console.log('message received: ');
-        console.log(msg);
+        // console.log('message received: ');
+        // console.log(msg);
 
         let message = JSON.parse(msg);
 
         await handleMessage(message);
     });
 
+    //on leave game
     socket.on('disconnect', function() {
-        console.log('Got disconnect!');
+        // console.log('Got disconnect!');
 
         pruneEmptyActiveGames(findActiveGameByWSID(socket.id), socket.id);
     });
@@ -42,8 +43,8 @@ module.exports = function(socket, io) {
     async function handleMessage(message){
         let targetGame = findActiveGame(message.gameCode);
         if(targetGame){
-            targetGame.messages.push(message.playerID + ': ' + message.messageBody);
-            sendEventToPlayers(targetGame, 'updateMessages', JSON.stringify(targetGame.messages));
+            targetGame.messages.push(message.playerID + ': ' + message.messageBody);//add message to game messages array
+            sendEventToPlayers(targetGame, 'updateMessages', JSON.stringify(targetGame.messages));//update players
 
 
             //FOR CHEATERS
@@ -68,10 +69,6 @@ module.exports = function(socket, io) {
             sendEventToPlayers(targetGame,'updateBoard', targetGame.getBoardStateAsHTML());
             sendEventToPlayers(targetGame,'updateTurnDisplay', targetGame.getCurrentTurnAsHTML());
             sendEventToPlayers(targetGame, 'updateScores', targetGame.getScoresAsHTML());
-
-            console.log('sending board update...');
-            console.log('sending to (player1): ' + targetGame.player1SocketID);
-            console.log('sending to (player2): ' + targetGame.player2SocketID);
 
             //check for win/loss condition
             if(targetGame.gameOver){
@@ -99,10 +96,6 @@ module.exports = function(socket, io) {
 
     function handleJoinRequest(joinRequest) {
         let targetGame = findActiveGame(joinRequest.gameCode);
-
-        console.log('joining player id: ' + joinRequest.playerID);
-        console.log('target game player1 id: ' + targetGame.player1ID);
-        console.log('target game player2 id: ' + targetGame.player2ID);
 
         if(targetGame){
             if(joinRequest.playerID === targetGame.player1ID){
@@ -147,7 +140,7 @@ module.exports = function(socket, io) {
             return ActiveGame.player1SocketID.toString() === WSID.toString() || ActiveGame.player2SocketID.toString() === WSID.toString();
         });
 
-        console.log('found game by WS: ' + targetGame);
+        // console.log('found game by WS: ' + targetGame);
 
         return targetGame;
     }
@@ -171,12 +164,8 @@ module.exports = function(socket, io) {
     }
 
 
-    async function updatePlayerWins(winningPlayer, losingPlayer){//some change
-        console.log('a player won, updating database...');
-        console.log('adding win:' + winningPlayer);
-        console.log('adding loss:' + losingPlayer);
-
-        await User.updateOne(
+    async function updatePlayerWins(winningPlayer, losingPlayer){
+        await User.updateOne(//add win for winner
             {
                 username : winningPlayer,
             },
@@ -184,7 +173,7 @@ module.exports = function(socket, io) {
                 $inc : { wins : 1}
             });
 
-        await User.updateOne(
+        await User.updateOne(//add loss for loser
             {
                 username : losingPlayer,
             },

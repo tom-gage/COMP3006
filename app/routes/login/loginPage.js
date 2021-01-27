@@ -6,14 +6,13 @@ let app = module.exports = express();
 
 app.set('views', __dirname);
 app.set('view engine', 'ejs');
-app.use(express.static(path.join(__dirname, '../../statics')));//nb: makes statics dir available to server
+app.use(express.static(path.join(__dirname, '../../statics')));
 
 
 
 //GET
 app.get('/loginPage.ejs', function (req, res) {
     if(!req.session.userID){
-        // req.session.userID = Math.floor((Math.random() * 1000) + 1).toString();//should be random ID
         req.session.userID = 'U_' + Math.random().toString(36).substr(2, 9);
     }
 
@@ -25,13 +24,13 @@ app.get('/loginPage.ejs', function (req, res) {
 
 //POST
 app.post('/loginPage.ejs', async function (req, res) {
-    console.log('login page request of type...');
     let requestedAction = req.body.requestedAction;
-    console.log(requestedAction);
+    // console.log('login page request of type...');
+    // console.log(requestedAction);
 
+    //process actions
     if(requestedAction === 'login'){
         handleLogin(req, res);
-
     } else if(requestedAction === 'register'){
         handleRegistration(req, res);
 
@@ -49,7 +48,7 @@ app.post('/loginPage.ejs', async function (req, res) {
     }
 });
 
-function handleLogin(req, res){
+function handleLogin(req, res){//validates and handle user log in
     let username = req.body.username;
     let password = req.body.password;
 
@@ -77,7 +76,7 @@ function handleLogin(req, res){
 }
 
 
-async function handleRegistration(req, res){
+async function handleRegistration(req, res){//validates and handles user registration
     let username = req.body.username;
     let password = req.body.password;
 
@@ -113,8 +112,8 @@ async function handleRegistration(req, res){
     }
 }
 
-async function handleEditUsernameRequest(req, res) {
-    console.log('editing username...');
+async function handleEditUsernameRequest(req, res) {//validates and handles edit username requests
+    // console.log('editing username...');
     let UsersModel = DB.getUserModel();
 
     let username = req.session.userID;
@@ -157,8 +156,8 @@ async function handleEditUsernameRequest(req, res) {
     }
 }
 
-async function handleEditPasswordRequest(req, res) {
-    console.log('editing password...');
+async function handleEditPasswordRequest(req, res) {//validates and handles edit password requests
+    // console.log('editing password...');
     let UsersModel = DB.getUserModel();
 
     let username = req.session.userID;
@@ -176,7 +175,7 @@ async function handleEditPasswordRequest(req, res) {
                 password: newPassword
             });
 
-        console.log('password change result is: ' + result);
+        // console.log('password change result is: ' + result);
 
         await UsersModel.find({}, function (err, users) {
             global.USERS = users;
@@ -206,7 +205,7 @@ async function handleEditPasswordRequest(req, res) {
 
 
 
-async function handleDeleteAccountRequest(req, res){
+async function handleDeleteAccountRequest(req, res){// handles delete account requests
     let UsersModel = DB.getUserModel();
     let username = req.session.userID;
     await UsersModel.deleteOne({ username: username });

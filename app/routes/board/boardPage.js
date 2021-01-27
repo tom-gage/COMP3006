@@ -72,7 +72,7 @@ function createNewActiveGame(req, res){
 
     ACTIVE_GAMES.push(newGame);
 
-    console.log('new game created, gameCode: ' + gameCode + ', player1ID: ' + player1ID);
+    // console.log('new game created, gameCode: ' + gameCode + ', player1ID: ' + player1ID);
 
     return newGame;
 }
@@ -97,24 +97,24 @@ function joinActiveGame(req, res){
 
         if(activeGame.code.toString() === searchGameCode.toString()){//if there's an active game with a code matching the submitted code
             if(game.player1ID === req.session.userID){//if player is already in game as player 1, prevents player1 joining their own game
-                console.log('JOIN GAME CONDITION, player already in game as player1');
+                // console.log('JOIN GAME CONDITION, player already in game as player1');
 
                 playerInQuestion = game.player1ID;
                 targetGame = game;
             } else if (game.player2ID === req.session.userID){//if player is already in game as player 2
-                console.log('JOIN GAME CONDITION, player already in game as player2');
+                // console.log('JOIN GAME CONDITION, player already in game as player2');
 
                 playerInQuestion = game.player2ID;
                 targetGame = game;
             } else if(game.player2ID === ''){//if game has space, add player2 to game, update ACTIVE_GAMES
-                console.log('JOIN GAME CONDITION, game has space');
+                // console.log('JOIN GAME CONDITION, game has space');
                 game.player2ID = req.session.userID;//add player2
                 ACTIVE_GAMES.splice(index, 1, game);//at current index: delete game, replace with updated game
 
                 playerInQuestion = game.player2ID;
                 targetGame = game;
             } else if(game.player1ID === ''){//if game has space, add player1 to game, update ACTIVE_GAMES
-                console.log('JOIN GAME CONDITION, game has space');
+                // console.log('JOIN GAME CONDITION, game has space');
                 game.player1ID = req.session.userID;//add player1
                 ACTIVE_GAMES.splice(index, 1, game);//at current index: delete game, replace with updated game
 
