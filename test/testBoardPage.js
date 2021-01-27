@@ -5,11 +5,14 @@ const request = require('supertest');
 const ActiveGame = require('../app/objects/ActiveGame');
 const server = require('../server');
 
-
 describe('hooks', function () {
 
     beforeEach(function () {
 
+    });
+
+    after(function () {
+        // server.stop();
     });
 
     describe('BoardPageRoute GET', function () {
@@ -19,6 +22,7 @@ describe('hooks', function () {
                 .query({ gameCode: 1000})
                 .expect(200)
                 .expect(/Game Not Found!/, done)
+
         })
     });
 

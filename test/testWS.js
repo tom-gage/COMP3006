@@ -19,11 +19,4 @@ describe('hooks', function () {
 
         });
     });
-
-
-
-
-
-
-
 });

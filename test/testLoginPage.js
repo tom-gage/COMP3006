@@ -12,6 +12,10 @@ describe('hooks', function () {
 
     });
 
+    after(function () {
+        DB.closeConnection();
+    });
+
     describe('LoginPageRoute GET', function () {
         it('serves the user the login page', function (done) {
             request(server)
@@ -83,6 +87,8 @@ describe('hooks', function () {
         await DB.initDBConnection();
         let user = await DB.getUserModel();
 
-        user.deleteOne({username : 'opamodamkasdmkdasmklmlcxbvhnt', password : 'adsmiodasmlkdmskldmsaklmasddsasd'});
+        await user.deleteOne({username : 'opamodamkasdmkdasmklmlcxbvhnt', password : 'adsmiodasmlkdmskldmsaklmasddsasd'});
+
+        await DB.closeConnection();
     });
 });

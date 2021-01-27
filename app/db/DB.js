@@ -28,8 +28,10 @@ async function initDBConnection() {
         console.log('db connection failed!');
         return false;
     }
+}
 
-
+async function closeConnection() {
+    mongoose.connection.close();
 }
 
 function getUserModel() {
@@ -42,5 +44,6 @@ function getUserModel() {
 
 module.exports = {
     initDBConnection,
-    getUserModel
+    getUserModel,
+    closeConnection
 };

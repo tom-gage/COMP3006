@@ -1,4 +1,5 @@
 //modules
+let stoppable = require('stoppable');
 let http = require('http');
 let bodyParser = require('body-parser');
 let session = require('express-session');
@@ -44,12 +45,13 @@ app.use(mainMenuRoute);
 //board page
 app.use(boardPageRoute);
 
+
 app.get('*', function (request, response) {
     response.send('404 page not found >.<');
 });
 
 //create server
-let server = http.createServer(app);
+let server = stoppable(http.createServer(app));
 
 //setup socket
 let io = socketIo(server);
@@ -62,5 +64,7 @@ server.listen(9000, function (request, response) {
     console.log('listening on port 9000');
 });
 
+
+server.stop();
 
 module.exports = app;

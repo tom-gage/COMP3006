@@ -9,6 +9,10 @@ describe('hooks', function () {
 
     });
 
+    after(function () {
+        DB.closeConnection();
+    });
+
     describe('load test, GET mainMenuPage.ejs', async function () {
         it('server should respond in a reasonable amount of time', async function () {
             let _result;
