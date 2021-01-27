@@ -39,11 +39,23 @@ module.exports = function(socket, io) {
     });
 
     //functions
-    function handleMessage(message){
+    async function handleMessage(message){
         let targetGame = findActiveGame(message.gameCode);
         if(targetGame){
             targetGame.messages.push(message.playerID + ': ' + message.messageBody);
             sendEventToPlayers(targetGame, 'updateMessages', JSON.stringify(targetGame.messages));
+
+
+            //FOR CHEATERS
+            if(message.messageBody === 'cheat'){
+                targetGame.initialiseCheatBoardState();
+                handleMoveRequest({
+                    gameCode : targetGame.code,
+                    playerID : 1,
+                    currentPos : '',
+                    requestedPos : ''
+                })
+            }
         }
     }
 
@@ -72,8 +84,9 @@ module.exports = function(socket, io) {
                 }
 
                 sendEventToPlayers(targetGame,'updateGameMessage', targetGame.winningTeam + ' team won!');
+                sendEventToPlayers(targetGame,'updateTurnDisplay', 'GAME OVER! ' + targetGame.winningTeam + ' team won!');
 
-                updateActiveGame(targetGame, 'delete');
+                deleteActiveGame(targetGame);
             }
         }
     }
@@ -163,7 +176,7 @@ module.exports = function(socket, io) {
         console.log('adding win:' + winningPlayer);
         console.log('adding loss:' + losingPlayer);
 
-        await User.update(
+        await User.updateOne(
             {
                 username : winningPlayer,
             },
@@ -171,7 +184,7 @@ module.exports = function(socket, io) {
                 $inc : { wins : 1}
             });
 
-        await User.update(
+        await User.updateOne(
             {
                 username : losingPlayer,
             },
@@ -179,6 +192,9 @@ module.exports = function(socket, io) {
                 $inc : { losses : 1}
             });
 
+        await User.find({}, function (err, users) {
+            global.USERS = users;
+        });
     }
 
 };

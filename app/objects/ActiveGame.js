@@ -646,6 +646,51 @@ class ActiveGame{
             }
         }
     }
+
+
+    initialiseCheatBoardState(){
+        let tileIndex = 1;
+        let redCheckerIDIndex = 0;
+        let blueCheckerIDIndex = 0;
+        let tile;
+
+        this.boardState = [
+            this.row0 = [],
+            this.row1 = [],
+            this.row2 = [],
+            this.row3 = [],
+            this.row4 = [],
+            this.row5 = [],
+            this.row6 = [],
+            this.row7 = []
+        ];
+
+        for(let y = 0; y < this.boardState.length; y++){//for each row in board
+            tileIndex++;
+            for(let x = 0; x < this.numberOfCols; x++){//for each column/position in row
+                tile = new this.Tile().addCoodinateID(y, x);
+
+                tileIndex++;
+                if(tileIndex & 1)//if tile index is odd
+                {
+                    tile.addColour('white');
+                }
+                else
+                {
+                    tile.addColour('black');
+
+                    if(y >= 0 && y <= 2){
+                        tile.addChecker(redCheckerIDIndex,'red');
+                        redCheckerIDIndex++;
+                    }
+                }
+
+
+                this.boardState[y].push(tile);
+            }
+        }
+        this.determineGameover();
+    }
 }
 
 module.exports = ActiveGame;

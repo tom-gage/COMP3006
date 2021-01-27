@@ -77,7 +77,7 @@ function handleLogin(req, res){
 }
 
 
-function handleRegistration(req, res){
+async function handleRegistration(req, res){
     let username = req.body.username;
     let password = req.body.password;
 
@@ -100,11 +100,15 @@ function handleRegistration(req, res){
 
         let UsersModel = DB.getUserModel();
 
-        UsersModel.create(newUser, function (err) {
+        await UsersModel.create(newUser, function (err) {
             if (err) return console.log(err);
         });
 
-        USERS.push(newUser);
+        await UsersModel.find({}, function (err, users) {
+            global.USERS = users;
+        });
+
+        // USERS.push(newUser);
         login(req, res);
     }
 }
