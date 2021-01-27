@@ -12,6 +12,11 @@ app.use(express.static(path.join(__dirname, '../../statics')));//nb: makes stati
 
 //GET
 app.get('/loginPage.ejs', function (req, res) {
+    if(!req.session.userID){
+        // req.session.userID = Math.floor((Math.random() * 1000) + 1).toString();//should be random ID
+        req.session.userID = 'U_' + Math.random().toString(36).substr(2, 9);
+    }
+
     res.render('loginPage.ejs',{
         username : req.session.userID,
         feedback : ''
@@ -130,7 +135,6 @@ async function handleEditUsernameRequest(req, res) {
                 username: newUsername
             });
 
-
         await UsersModel.find({}, function (err, users) {
             global.USERS = users;
         });
@@ -159,7 +163,7 @@ async function handleEditPasswordRequest(req, res) {
     let newPassword = req.body.newPassword;
 
     if(newPassword){
-        await UsersModel.findOneAndUpdate(
+        let result = await UsersModel.findOneAndUpdate(
             {
                 username : username,
                 password : currentPassword
@@ -168,15 +172,24 @@ async function handleEditPasswordRequest(req, res) {
                 password: newPassword
             });
 
+        console.log('password change result is: ' + result);
 
         await UsersModel.find({}, function (err, users) {
             global.USERS = users;
         });
 
-        res.render('loginPage.ejs', {
-            username : req.session.userID,
-            feedback : 'Password changed!'
-        });
+        if(result){
+            res.render('loginPage.ejs', {
+                username : req.session.userID,
+                feedback : 'Password changed!'
+            });
+        } else {
+            res.render('loginPage.ejs', {
+                username : req.session.userID,
+                feedback : 'Password change failed!'
+            });
+        }
+
     } else {
         res.render('loginPage.ejs', {
             username : req.session.userID,

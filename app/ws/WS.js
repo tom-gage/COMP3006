@@ -55,6 +55,7 @@ module.exports = function(socket, io) {
 
             sendEventToPlayers(targetGame,'updateBoard', targetGame.getBoardStateAsHTML());
             sendEventToPlayers(targetGame,'updateTurnDisplay', targetGame.getCurrentTurnAsHTML());
+            sendEventToPlayers(targetGame, 'updateScores', targetGame.getScoresAsHTML());
 
             console.log('sending board update...');
             console.log('sending to (player1): ' + targetGame.player1SocketID);
@@ -100,6 +101,12 @@ module.exports = function(socket, io) {
 
             console.log('sending initial board update...');
             sendEventToPlayers(targetGame, 'updateBoard', targetGame.getBoardStateAsHTML());
+            sendEventToPlayers(targetGame, 'updateTurnDisplay', targetGame.getCurrentTurnAsHTML());
+            sendEventToPlayers(targetGame, 'updateScores', targetGame.getScoresAsHTML());
+
+            io.to(targetGame.player1SocketID).emit('updateTeamStatus', 'You are on Red Team.');
+            io.to(targetGame.player2SocketID).emit('updateTeamStatus', 'You are on Blue Team.');
+
             sendEventToPlayers(targetGame, 'updateMessages', JSON.stringify(targetGame.messages));
         }
     }

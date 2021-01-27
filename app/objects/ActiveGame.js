@@ -4,6 +4,8 @@ class ActiveGame{
     code = '';
     player1ID = '';
     player2ID = '';
+    player1Score = 0;
+    player2Score = 0;
 
     //ws vars
     player1SocketID = '';
@@ -405,6 +407,16 @@ class ActiveGame{
         startingTile.removeChecker();//then remove checker
         //then remove checker being captured
         this.boardState[Math.abs(currentPos.y - (currentPos.y - requestedPos.y) / 2)][Math.abs(currentPos.x - (currentPos.x - requestedPos.x) / 2)].removeChecker();
+
+        console.log('SEE HERE : ' + endingTile.getCheckerTeam());
+
+        if(endingTile.getCheckerTeam() === 'red'){
+            console.log('player 1 score incremented');
+            this.player1Score += 1;
+        } else if(endingTile.getCheckerTeam() === 'blue'){
+            console.log('player 2 score incremented');
+            this.player2Score += 1;
+        }
     }
 
     getTileByPosition(position){
@@ -533,7 +545,6 @@ class ActiveGame{
 
 
                 this.boardState[y].push(tile);
-                // console.log('row ' + y + ', position ' + x + ' updated with: ' + tile);
             }
         }
     }
@@ -561,6 +572,14 @@ class ActiveGame{
 
         turnDisplay += '</p>';
         return turnDisplay;
+    }
+
+    getScoresAsHTML(){
+        let scores = '<p id="scores">';
+        scores += 'Red Team: ' + this.player1Score + ' - Blue Team: ' + this.player2Score;
+        scores += '</p>';
+
+        return scores;
     }
 
     prettyPrintBoardState(){
@@ -594,8 +613,6 @@ class ActiveGame{
 
     initialiseBlankBoardState(){
         let tileIndex = 1;
-        let redCheckerIDIndex = 0;
-        let blueCheckerIDIndex = 0;
         let tile;
 
         this.boardState = [
