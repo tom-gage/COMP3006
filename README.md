@@ -1,1 +1,1 @@
-# COMP3006
+# COMP3006, Checkers
